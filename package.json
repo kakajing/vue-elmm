@@ -5,7 +5,7 @@
   "author": "jing <985812572@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --open --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js"
@@ -17,7 +17,9 @@
     "axios": "^0.17.1",
     "good-storage": "^1.0.1",
     "babel-runtime": "^6.26.0",
-    "swiper": "^4.1.0"
+    "swiper": "^4.1.0",
+    "fastclick": "^1.0.6",
+    "qs": "^6.5.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

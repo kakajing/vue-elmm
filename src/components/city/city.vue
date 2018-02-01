@@ -26,7 +26,6 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import { getCurrentCity, query } from 'api/city'
-  import { mapActions, mapGetters } from 'vuex'
   import { getStore, setStore } from 'common/js/mUtils'
 
   export default{
@@ -35,7 +34,6 @@
         placeholder: '输入学校、商务楼、地址',
         goBack: true,
         geohash: '',
-        //   inputValue: '',   // 搜索地址
         cityId: '',       // 当前城市id
         cityName: '',     // 当前城市名字
         placeList: [],     // 搜索城市列表
@@ -50,11 +48,6 @@
       if (getStore('placeHistory')) {
         this.placeList = JSON.parse(getStore('placeHistory'))
       }
-    },
-    computed: {
-      ...mapGetters([
-        'searchHistory'
-      ])
     },
     methods: {
       getCurrentCity () {
@@ -93,10 +86,7 @@
         }
         setStore('placeHistory', this.placeHistory)
         this.$router.push({path: '/msite', query: {geohash}})
-      },
-      ...mapActions([
-        'saveSearchHistory'
-      ])
+      }
     },
     components: {
       EHeader

@@ -119,6 +119,36 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      }),
+      // 获取msite页面地址信息
+      app.get('/api/msiteAdress', (req, res) => {
+        const url = 'https://www.ele.me/restapi/v1/pois/ww0pd91c0sc'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取导航食品类型列表
+      app.get('/api/msiteFoodTypes', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/openapi/entries'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
       })
     }
 
