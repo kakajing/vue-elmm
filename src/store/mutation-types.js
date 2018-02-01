@@ -1,0 +1,7 @@
+export const RECODE_ADDRESS = 'RECODE_ADDRESS'
+
+export const SET_LATITUDE = 'SET_LATITUDE'
+
+export const SET_LONGITUDE = 'SET_LONGITUDE'
+
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'

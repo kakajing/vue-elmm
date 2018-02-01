@@ -90,6 +90,35 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      }),
+      app.get('/api/search', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/bgs/poi/search_poi_nearby'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取搜索地址
+      app.get('/api/query', (req, res) => {
+        const url = 'https://www.ele.me/restapi/v2/pois'
+        axios.get(url, {
+          headers: {
+            Host: 'www.ele.me',
+            Referer: 'https://www.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
       })
     }
 

@@ -25,6 +25,7 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import {getCurrentCity, query} from 'api/city'
+  import {mapActions, mapGetters} from 'vuex'
 
   export default{
     data () {
@@ -44,6 +45,15 @@
     },
     mounted () {
       this.getCurrentCity()
+      if (this.searchHistory) {
+        this.placeHistory = this.searchHistory
+      }
+     // console.log(this.searchHistory)
+    },
+    computed: {
+      ...mapGetters([
+        'searchHistory'
+      ])
     },
     methods: {
       getCurrentCity () {
@@ -62,7 +72,33 @@
             }
           })
         }
-      }
+      },
+      nextPage (index, geohash) {
+        let history = this.searchHistory
+        let choosePlace = this.placeList[index]
+        if (history) {
+          let checkRepeat = false
+          this.placeHistory = history
+          this.placeHistory.forEach(item => {
+            if (item.geohash === geohash) {
+              checkRepeat = true
+            }
+          })
+          if (!checkRepeat) {
+            this.placeHistory.push(choosePlace)
+          }
+        } else {
+          this.placeHistory.push(choosePlace)
+        }
+        this.saveSearchHistory(this.placeHistory)
+        this.$router.push({path: '/msite', query: {geohash}})
+      },
+      nextPage1 (geohash) {
+        this.$router.push({path: '/msite', query: {geohash}})
+      },
+      ...mapActions([
+        'saveSearchHistory'
+      ])
     },
     components: {
       EHeader
