@@ -75,7 +75,22 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }).catch((e) => {
             console.log(e)
           })
+        }),
+      // 获取当前所在城市
+      app.get('/api/getCurrentCity', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/bgs/poi/reverse_geo_coding'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
         })
+      })
     }
 
   },
