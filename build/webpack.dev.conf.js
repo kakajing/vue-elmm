@@ -48,6 +48,34 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
+    },
+    before(app) {
+      // 获取首页所有城市
+      app.get('/api/getCities', (req, res) => {
+        const url = 'https://www.ele.me/restapi/shopping/v1/cities'
+        axios.get(url, {
+          headers: {
+            Host: 'www.ele.me',
+            Referer: 'https://www.ele.me/'
+          }}).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取首页默认地址
+      app.get('/api/getGuess', (req, res) => {
+          const url = 'https://www.ele.me/restapi/shopping/v1/cities/guess'
+          axios.get(url, {
+            headers: {
+              Host: 'www.ele.me',
+              Referer: 'https://www.ele.me/'
+            }}).then((response) => {
+            res.json(response.data)
+          }).catch((e) => {
+            console.log(e)
+          })
+        })
     }
 
   },
