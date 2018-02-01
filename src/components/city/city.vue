@@ -5,15 +5,16 @@
     </e-header>
     <form class="city_form" @submit.prevent>
       <div>
-        <input type="search" ref="search" name="city" v-model="query" :placeholder="placeholder" class="city_input input_style" required/>
+        <input type="search" ref="search" name="city" v-model="query" :placeholder="placeholder"
+               class="city_input input_style" required/>
       </div>
       <div>
-        <input type="submit" name="submit" class="city_submit input_style" @click="postPois" />
+        <input type="submit" name="submit" class="city_submit input_style" @click="postPois"/>
       </div>
     </form>
-    <div v-if="historyTitle"  class="pois_search_history">搜索历史</div>
+    <div v-if="historyTitle" class="pois_search_history">搜索历史</div>
     <ul class="getpois_ul">
-      <li v-for="(item, index) in placeList" :key="index" @click="nextPage1(item.geohash)">
+      <li v-for="(item, index) in placeList" :key="index" @click="nextPage(index, item.geohash)">
         <h4 class="pois_name ellipsis">{{item.name}}</h4>
         <p class="pois_address ellipsis">{{item.address}}</p>
       </li>
@@ -24,8 +25,9 @@
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
-  import {getCurrentCity, query} from 'api/city'
-  import {mapActions, mapGetters} from 'vuex'
+  import { getCurrentCity, query } from 'api/city'
+  import { mapActions, mapGetters } from 'vuex'
+  import { getStore, setStore } from 'common/js/mUtils'
 
   export default{
     data () {
@@ -33,7 +35,7 @@
         placeholder: '输入学校、商务楼、地址',
         goBack: true,
         geohash: '',
-     //   inputValue: '',   // 搜索地址
+        //   inputValue: '',   // 搜索地址
         cityId: '',       // 当前城市id
         cityName: '',     // 当前城市名字
         placeList: [],     // 搜索城市列表
@@ -45,10 +47,9 @@
     },
     mounted () {
       this.getCurrentCity()
-      if (this.searchHistory) {
-        this.placeHistory = this.searchHistory
+      if (getStore('placeHistory')) {
+        this.placeList = JSON.parse(getStore('placeHistory'))
       }
-     // console.log(this.searchHistory)
     },
     computed: {
       ...mapGetters([
@@ -74,11 +75,11 @@
         }
       },
       nextPage (index, geohash) {
-        let history = this.searchHistory
+        let history = getStore('placeHistory')
         let choosePlace = this.placeList[index]
         if (history) {
           let checkRepeat = false
-          this.placeHistory = history
+          this.placeHistory = JSON.parse(history)
           this.placeHistory.forEach(item => {
             if (item.geohash === geohash) {
               checkRepeat = true
@@ -90,10 +91,7 @@
         } else {
           this.placeHistory.push(choosePlace)
         }
-        this.saveSearchHistory(this.placeHistory)
-        this.$router.push({path: '/msite', query: {geohash}})
-      },
-      nextPage1 (geohash) {
+        setStore('placeHistory', this.placeHistory)
         this.$router.push({path: '/msite', query: {geohash}})
       },
       ...mapActions([
@@ -109,65 +107,70 @@
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
 
-  .city_container{
+  .city_container {
     padding-top: 2.35rem;
   }
-  .chang_city{
+
+  .chang_city {
     right: 0.4rem;
-    @include sc(0.6rem,#fff);
+    @include sc(0.6rem, #fff);
     @include ct
   }
-  .city_form{
+
+  .city_form {
     background-color: #fff;
     border-top: 1px solid $bc;
     border-bottom: 1px solid $bc;
     padding-top: 0.4rem;
-    div{
+    div {
       width: 90%;
       margin: 0 auto;
       text-align: center;
-      .input_style{
+      .input_style {
         border-radius: 0.1rem;
         margin-bottom: 0.4rem;
         @include wh(100%, 1.4rem)
       }
-      .city_input{
+      .city_input {
         border: 1px solid $bc;
         padding: 0 0.3rem;
         @include sc(0.65rem, #333)
       }
-      .city_submit{
+      .city_submit {
         background-color: $blue;
         @include sc(0.65rem, #fff)
       }
     }
   }
-  .pois_search_history{
+
+  .pois_search_history {
     border-top: 1px solid $bc;
     border-bottom: 1px solid $bc;
     padding-left: 0.5rem;
     @include sc(0.7rem, #333)
   }
-  .getpois_ul{
+
+  .getpois_ul {
     background-color: #fff;
     border-top: 1px solid $bc;
-    li{
+    li {
       margin: 0 auto;
       padding-top: 0.65rem;
       border-bottom: 1px solid $bc;
-      .pois_name{
+      .pois_name {
         margin: 0 auto 0.35rem;
         width: 90%;
         @include sc(0.65rem, #333);
       }
-      .pois_address{
+      .pois_address {
         width: 90%;
         margin: 0 auto 0.55rem;
         @include sc(0.45rem, #999)
       }
     }
   }
-  .search_none_place{
+
+  .search_none_place {
     margin: 0 auto;
     @include font(0.65rem, 1.75rem);
     color: #333;
