@@ -23,3 +23,22 @@ export function msiteFoodTypes (latitude, longitude) {
     return Promise.resolve(res.data)
   })
 }
+
+export function shopList (latitude, longitude, extras) {
+  const url = '/api/shopList'
+  const data = {
+    latitude: latitude,
+    longitude: longitude,
+    offset: 0,
+    limit: 8,
+    extras,
+    extra_filters: 'home',
+    rank_id: '',
+    terminal: 'h5'
+  }
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

@@ -149,6 +149,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      }),
+      // 获取msite页面商铺列表
+      app.get('/api/shopList', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v3/restaurants'
+        axios.get(url, {
+          headers: {
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
       })
     }
 

@@ -15,7 +15,8 @@
       <div class="swiper-container" v-if="foodTypes.length">
         <div class="swiper_wrapper">
           <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
-            <router-link :to="{path: '/food', query: {geohash}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
+            <router-link :to="{path: '/food', query: {geohash}}" v-for="foodItem in item" :key="foodItem.id"
+                         class="link_to_food">
               <figure>
                 <img :src="imgBaseUrl + foodItem.image_hash + '.jpeg'"/>
                 <figcaption>{{foodItem.name}}</figcaption>
@@ -33,14 +34,17 @@
         </svg>
         <span class="shop_header_title">附近商家</span>
       </header>
+      <shop-list :geohash="geohash" :shopListArr="shopListArr"></shop-list>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
-  import { msiteAdress, msiteFoodTypes } from 'api/msite'
+  import { msiteAdress, msiteFoodTypes, shopList } from 'api/msite'
   import Swiper from 'swiper'
+  import ShopList from 'base/shop-list/shop-list'
+  import { mapMutations } from 'vuex'
 
   export default{
     data () {
@@ -51,15 +55,22 @@
         hasGetData: false,   // 是否已经获取数据
         imgBaseUrl: 'https://fuss10.elemecdn.com/',   // 图片域名地址
         latitude: '',
-        longitude: ''
+        longitude: '',
+        extras: [],
+        shopListArr: []
       }
     },
     mounted () {
-      this.getMsiteAdress()
+      this.extras = ['activities', 'tags']
+      msiteAdress().then(res => {
+        this.msiteTitle = res.name
+        this.geohash = res.geohash
+        shopList(res.latitude, res.longitude, res.extras).then(resq => {
+          this.shopListArr = Array.from(Object.keys(resq.items).map(key => resq.items[key].restaurant))
+        //  console.log('vvvvvv' + this.shopListArr)
+        })
+      })
       this.getMsiteFoodTypes()
-      setTimeout(() => {
-        this.initSwiper()
-      }, 20)
     },
     methods: {
       getMsiteAdress () {
@@ -84,6 +95,15 @@
           this.initSwiper()
         })
       },
+      getShopList () {
+        this.extras = ['activities', 'tags']
+        msiteAdress().then(res => {
+          this.msiteTitle = res.name
+          shopList(res.latitude, res.longitude, res.extras).then(resq => {
+            this.shopListArr = Array.from(Object.keys(resq.items).map(key => resq.items[key].restaurant))
+          })
+        })
+      },
       initSwiper () {
         this.swiper = new Swiper('.swiper-container', {
           pagination: {
@@ -93,9 +113,14 @@
           loop: true
         })
       },
+      ...mapMutations({
+        setLatitude: 'SET_LATITUDE',
+        setLongitude: 'SET_LONGITUDE'
+      })
     },
     components: {
-      EHeader
+      EHeader,
+      ShopList
     }
   }
 </script>
@@ -103,67 +128,71 @@
 <style scoped lang="scss">
   @import "../../common/scss/mixin";
 
-  .link_search{
+  .link_search {
     left: .8rem;
     @include wh(.8rem, .9rem);
     @include ct;
   }
-  .msite_title{
+
+  .msite_title {
     @include center;
     width: 50%;
     color: #fff;
     text-align: center;
     margin-left: -0.5rem;
-    .title_text{
+    .title_text {
       @include sc(0.8rem, #fff);
       text-align: center;
       display: block;
     }
   }
-  .msite_nav{
+
+  .msite_nav {
     padding-top: 2.1rem;
     background-color: #fff;
     border-bottom: 0.025rem solid $bc;
     height: 10.6rem;
-    .swiper-container{
+    .swiper-container {
       @include wh(100%, auto);
       padding-bottom: 0.6rem;
-      .swiper-pagination{
+      .swiper-pagination {
         bottom: 0.2rem;
       }
     }
   }
-  .food_types_container{
+
+  .food_types_container {
     display: flex;
     flex-wrap: wrap;
-    .link_to_food{
+    .link_to_food {
       width: 25%;
       padding: 0.3rem 0rem;
       @include fj(center);
-      figure{
-        img{
+      figure {
+        img {
           margin-bottom: 0.3rem;
           @include wh(1.8rem, 1.8rem);
         }
-        figcaption{
+        figcaption {
           text-align: center;
           @include sc(0.55rem, #666);
         }
       }
     }
   }
-  .shop_list_container{
+
+  .shop_list_container {
     margin-top: .4rem;
     border-top: 0.025rem solid $bc;
     background-color: #fff;
-    .shop_header{
-      .shop_icon{
+    .shop_header {
+      .shop_icon {
         fill: #999;
         margin-left: 0.6rem;
-        vertical-align: middle;  // 垂直对齐方式
+        vertical-align: middle; // 垂直对齐方式
         @include wh(0.6rem, 0.6rem)
       }
-      .shop_header_title{
+      .shop_header_title {
         color: #999;
         @include font(0.5rem, 1.6rem);
       }

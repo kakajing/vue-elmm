@@ -67,6 +67,10 @@
           })
         }
       },
+      /**
+       * 点击搜索结果进入下一页面时进行判断是否已经有一样的历史记录
+       * 如果没有则新增，如果有则不做重复储存，判断完成后进入下一页
+       */
       nextPage (index, geohash) {
         let history = getStore('placeHistory')
         let choosePlace = this.placeList[index]
@@ -84,6 +88,7 @@
         } else {
           this.placeHistory.push(choosePlace)
         }
+        // 保存数据
         setStore('placeHistory', this.placeHistory)
         this.$router.push({path: '/msite', query: {geohash}})
       }
