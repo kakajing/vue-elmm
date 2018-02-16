@@ -1,8 +1,8 @@
 <template>
   <div>
     <a id="top"></a>
-    <ul>
-      <router-link v-for="item in shopListArr" :to="{path: 'food', query: {}}"  tag="li"
+    <ul v-load-more="loaderMore" v-if="shopListArr.length" type="square">
+      <router-link v-for="item in shopListArr" :to="{path: 'food', query: {geohash, id: item.id}}"  tag="li"
                    :key="item.id" class="shop_li">
         <section>
           <img :src="imgBaseUrl + subImgUrl(item.image_path)" class="shop_img">
@@ -14,17 +14,65 @@
               <li class="supports" v-for="child in item.supports" :key="child.id">{{child.icon_name}}</li>
             </ul>
           </header>
-          <h5></h5>
-          <h5></h5>
+          <h5 class="rating_order_num">
+            <section class="rating_order_num_left">
+              <section class="rating_section">
+                <div class="rating_container">
+                  <span class="star_container">
+                    <svg class="grey_fill" v-for="itemNum1 in 5" :key="itemNum1">
+											<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#star"></use>
+										</svg>
+                  </span>
+                  <div class="star_overflow" :style="'width:' + item.rating*2/5 + 'rem'">
+                    <span class="star_container">
+                      <svg class="orange_fill" v-for="itemNum2 in 5" :key="itemNum2">
+												<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#star"></use>
+											</svg>
+                    </span>
+                  </div>
+                </div>
+                <span class="rating_num">{{item.rating}}</span>
+              </section>
+              <section class="order_section">月售{{item.recent_order_num}}单</section>
+            </section>
+            <section class="rating_order_num_right">
+              <span class="delivery_style delivery_left"></span>
+              <span class="delivery_style delivery_right">准时达</span>
+            </section>
+          </h5>
+          <h5 class="fee_distance">
+            <section class="fee">
+              ¥{{item.float_minimum_order_amount}}起送
+              <span class="segmentation">/</span>
+              {{item.piecewise_agent_fee.tips}}
+            </section>
+            <section class="distance_time">
+              <span>
+                {{item.distance > 1000 ? (item.distance / 1000).toFixed(2) + 'km' : item.distance + 'm'}}
+                <span class="segmentation">/</span>
+              </span>
+              <span class="order_time">{{item.order_lead_time}}分钟</span>
+            </section>
+          </h5>
         </hgroup>
       </router-link>
     </ul>
+    <aside class="return_top" v-if="showBackStatus" @click="backTop">
+      <svg class="back_top_svg">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#backtop"></use>
+      </svg>
+    </aside>
+    <footer class="loader_more">正在加载更多商家...</footer>
+    <div ref="abc" style="background-color: red"></div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import { showBack, animate } from 'common/js/mUtils'
+  import { loadMore } from 'common/js/mixin'
 
   export default{
+    mixins: [loadMore],
     props: {
       geohash: {
         type: String,
@@ -37,17 +85,43 @@
     },
     data () {
       return {
-        imgBaseUrl: 'https://fuss10.elemecdn.com/'
+        imgBaseUrl: 'https://fuss10.elemecdn.com/',
+        preventRepeatRequest: false, // 到达底部加载数据，防止重复加载
+        showBackStatus: false              // 显示返回顶部按钮
       }
     },
     mounted () {
+      // 开始监听scrollTop的值，达到一定程度后显示返回顶部按钮
+      showBack(status => {
+        this.showBackStatus = status
+      })
     },
     watch: {
       shopListArr () {
-        console.log(this.shopListArr)
+//        console.log('bbbbbbbbbbbbbbbb')
+//        console.log(this.shopListArr)
       }
     },
     methods: {
+      // 到达底部加载更多数据
+      loaderMore () {
+        // 防止重复请求
+        if (this.preventRepeatRequest) {
+          return
+        }
+        this.preventRepeatRequest = true
+        this.offset += 20
+        // 当获取数据小于20，说明没有更多数据，不需要再次请求数据
+        if (this.shopListArr.length < 20) {
+          return
+        }
+        this.preventRepeatRequest = false
+      },
+      // 返回顶部
+      backTop () {
+        animate(document.body, {scrollTop: '0'}, 400, 'ease-out')
+      },
+      // 传递过来的图片地址需要处理后才能正常使用
       subImgUrl (path) {
         let suffix
       //  console.log(path)
