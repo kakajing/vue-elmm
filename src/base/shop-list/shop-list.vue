@@ -36,7 +36,7 @@
               <section class="order_section">月售{{item.recent_order_num}}单</section>
             </section>
             <section class="rating_order_num_right">
-              <span class="delivery_style delivery_left"></span>
+              <span class="delivery_style delivery_left">{{item.delivery_mode.text}}</span>
               <span class="delivery_style delivery_right">准时达</span>
             </section>
           </h5>
@@ -62,13 +62,13 @@
         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#backtop"></use>
       </svg>
     </aside>
-    <footer class="loader_more">正在加载更多商家...</footer>
+    <footer class="loader_more" v-show="preventRepeatRequest">正在加载更多商家...</footer>
     <div ref="abc" style="background-color: red"></div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import { showBack, animate } from 'common/js/mUtils'
+  import { showBack } from 'common/js/mUtils'
   import { loadMore } from 'common/js/mixin'
 
   export default{
@@ -96,12 +96,6 @@
         this.showBackStatus = status
       })
     },
-    watch: {
-      shopListArr () {
-//        console.log('bbbbbbbbbbbbbbbb')
-//        console.log(this.shopListArr)
-      }
-    },
     methods: {
       // 到达底部加载更多数据
       loaderMore () {
@@ -119,7 +113,7 @@
       },
       // 返回顶部
       backTop () {
-        animate(document.body, {scrollTop: '0'}, 400, 'ease-out')
+        window.scrollTo(0, 0)
       },
       // 传递过来的图片地址需要处理后才能正常使用
       subImgUrl (path) {
@@ -132,6 +126,12 @@
         }
         let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
         return url
+      }
+    },
+    watch: {
+      shopListArr () {
+//        console.log('bbbbbbbbbbbbbbbb')
+//        console.log(this.shopListArr)
       }
     }
   }
@@ -225,11 +225,17 @@
       }
       .rating_order_num_right {
         display: flex;
+        align-items: center;
+        transform: scale(.7);
+        min-width: 5rem;
+        justify-content: flex-end;
+        margin-right: -0.8rem;
         .delivery_style {
           font-size: 0.4rem;
           padding: 0.04rem 0.08rem 0;
           border-radius: 0.08rem;
           margin-left: 0.08rem;
+          border: 1px;
         }
         .delivery_left {
           color: #fff;
