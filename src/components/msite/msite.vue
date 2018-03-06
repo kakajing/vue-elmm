@@ -1,7 +1,7 @@
 <template>
   <div>
     <e-header signin-up='msite'>
-      <router-link to="/search" class="link_search" slot="search">
+      <router-link to="/search/geohash" class="link_search" slot="search">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
           <circle cx="9" cy="9" r="8" stroke="rgb(255,255,255)" stroke-width="2" fill="none"/>
           <line x1="15" y1="15" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"/>
@@ -15,10 +15,12 @@
       <div class="swiper-container" v-if="foodTypes.length">
         <div class="swiper_wrapper">
           <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
-            <router-link :to="{path: '/food', query: {geohash}}" v-for="foodItem in item" :key="foodItem.id"
+            <router-link :to="{path: '/food',
+                                query: {geohash, title: foodItem.name, restaurant_category_id: getCategoryId(foodItem.link)}}"
+                         v-for="foodItem in item" :key="foodItem.id"
                          class="link_to_food">
               <figure>
-                <img :src="imgBaseUrl + foodItem.image_hash + '.jpeg'"/>
+                <img :src="imgBaseUrl + subImgUrl(foodItem.image_hash)"/>
                 <figcaption>{{foodItem.name}}</figcaption>
               </figure>
             </router-link>
@@ -42,6 +44,7 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import { msiteAdress, msiteFoodTypes, shopList } from 'api/msite'
+  import {imgBaseUrl} from 'common/js/config'
   import Swiper from 'swiper'
   import ShopList from 'base/shop-list/shop-list'
   import { mapMutations } from 'vuex'
@@ -52,8 +55,8 @@
         geohash: '',   // city页面传递过来的地址geohash
         msiteTitle: '获取地址中...',   // msiet页面头部标题
         foodTypes: [],   // 食品分类列表
-        hasGetData: false,   // 是否已经获取数据
-        imgBaseUrl: 'https://fuss10.elemecdn.com/',   // 图片域名地址
+        hasGetData: false,   // 是否已经获取地理位置数据，成功之后再获取商铺列表信息
+        imgBaseUrl: imgBaseUrl,   // 图片域名地址
         latitude: '',
         longitude: '',
         extras: [],
@@ -61,14 +64,17 @@
       }
     },
     mounted () {
+      this.getMsiteAdress()
       this.extras = ['activities', 'tags']
       msiteAdress().then(res => {
         this.msiteTitle = res.name
         this.geohash = res.geohash
         shopList(res.latitude, res.longitude, res.extras).then(resq => {
           this.shopListArr = Array.from(Object.keys(resq.items).map(key => resq.items[key].restaurant))
-        //  console.log('vvvvvv' + this.shopListArr)
+        //  console.log('vvvvv' + this.shopListArr)
         })
+//        this.setLatitude(res.latitude)
+//        this.setLongitude(res.longitude)
       })
       this.getMsiteFoodTypes()
     },
@@ -84,6 +90,7 @@
       },
       getMsiteFoodTypes () {
         msiteFoodTypes(this.latitude, this.longitude).then((res) => {
+         // console.log(this.latitude)
           let resLength = res[0].entries.length
           let resArr = res[0].entries.concat([])
           let foodArr = []
@@ -91,6 +98,8 @@
             foodArr[j] = resArr.splice(0, 8)
           }
           this.foodTypes = foodArr
+        //  let foods = this.foodTypes[0]
+         // console.log(typeof foods[0].link)
         }).then(() => {
           this.initSwiper()
         })
@@ -112,6 +121,27 @@
           },
           loop: true
         })
+      },
+      // 传递过来的图片地址需要处理后才能正常使用
+      subImgUrl (path) {
+        let suffix
+        //  console.log(path)
+        if (path.indexOf('jpeg') !== -1) {
+          suffix = '.jpeg'
+        } else {
+          suffix = '.png'
+        }
+        let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
+        return url
+      },
+      getCategoryId (url) {
+       // let urlData = decodeURIComponent(url).split('=')[3].split(':')[3].replace('}&navType', '')
+        let urlData = decodeURIComponent(url).split('=')[3].replace('&navType', '')
+        if (/restaurant_category_id/gi.test(urlData)) {
+          return JSON.parse(urlData).restaurant_category_id
+        } else {
+          return ''
+        }
       },
       ...mapMutations({
         setLatitude: 'SET_LATITUDE',

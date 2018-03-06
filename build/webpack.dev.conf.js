@@ -163,6 +163,51 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      }),
+      // 获取search页面搜索结果
+      app.get('/api/searchRestaurant', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v2/restaurants/search'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取food页面的 category 种类列表
+      app.get('/api/foodCategory', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v2/restaurant/category'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取food页面的商铺列表
+      app.get('/api/restaurants', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v3/restaurants'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
       })
     }
 

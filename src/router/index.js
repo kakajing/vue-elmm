@@ -49,13 +49,11 @@ export default new Router({
         {
           path: '/msite',
           component: Msite,   // 所有商铺列表页
-          meta: {keepAlive: true},   // 需要被缓存
-          children: [
-            {
-              path: 'food',
-              component: Food  // 特色商铺列表页
-            }
-          ]
+          meta: {keepAlive: true}   // 需要被缓存
+        },
+        {
+          path: '/food',
+          component: Food  // 特色商铺列表页
         },
         {
           path: '/order',

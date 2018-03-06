@@ -1,8 +1,7 @@
 <template>
-  <div>
-    <a id="top"></a>
+  <div class="shoplist_container">
     <ul v-load-more="loaderMore" v-if="shopListArr.length" type="square">
-      <router-link v-for="item in shopListArr" :to="{path: 'food', query: {geohash, id: item.id}}"  tag="li"
+      <router-link v-for="item in shopListArr" :to="{path: 'shop', query: {geohash, id: item.id}}"  tag="li"
                    :key="item.id" class="shop_li">
         <section>
           <img :src="imgBaseUrl + subImgUrl(item.image_path)" class="shop_img">
@@ -36,7 +35,8 @@
               <section class="order_section">月售{{item.recent_order_num}}单</section>
             </section>
             <section class="rating_order_num_right">
-              <span class="delivery_style delivery_left">{{item.delivery_mode.text}}</span>
+              <!--{{item.delivery_mode.text}}-->
+              <span class="delivery_style delivery_left"></span>
               <span class="delivery_style delivery_right">准时达</span>
             </section>
           </h5>
@@ -57,6 +57,7 @@
         </hgroup>
       </router-link>
     </ul>
+    <p v-else class="empty_data">没有更多了</p>
     <aside class="return_top" v-if="showBackStatus" @click="backTop">
       <svg class="back_top_svg">
         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#backtop"></use>
@@ -68,27 +69,28 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { showBack } from 'common/js/mUtils'
+  import { showBack, animate } from 'common/js/mUtils'
   import { loadMore } from 'common/js/mixin'
+  import {imgBaseUrl} from 'common/js/config'
+ // import { shopList } from 'api/msite'
+  import {mapState} from 'vuex'
 
   export default{
     mixins: [loadMore],
-    props: {
-      geohash: {
-        type: String,
-        default: ''
-      },
-      shopListArr: {
-        type: Array,
-        default: []
-      }
-    },
+    props: ['restaurantCategoryId', 'geohash', 'shopListArr', 'restaurantCategoryIds', 'sortByType'],
     data () {
       return {
-        imgBaseUrl: 'https://fuss10.elemecdn.com/',
+        imgBaseUrl: imgBaseUrl,
         preventRepeatRequest: false, // 到达底部加载数据，防止重复加载
-        showBackStatus: false              // 显示返回顶部按钮
+        showBackStatus: false,              // 显示返回顶部按钮
+        extras: []
       }
+    },
+    computed: {
+      ...mapState([
+        'latitude',
+        'longitude'
+      ])
     },
     mounted () {
       // 开始监听scrollTop的值，达到一定程度后显示返回顶部按钮
@@ -97,6 +99,15 @@
       })
     },
     methods: {
+//      initData () {
+//        this.extras = ['activities', 'tags']
+//        shopList(this.latitude, this.longitude, this.extras).then(res => {
+//          console.log(this.latitude)
+//          console.log(res)
+//          this.shopListArr = Array.from(Object.keys(res.items).map(key => res.items[key].restaurant))
+//        //  console.log(this.shopListArr)
+//        })
+//      },
       // 到达底部加载更多数据
       loaderMore () {
         // 防止重复请求
@@ -106,14 +117,14 @@
         this.preventRepeatRequest = true
         this.offset += 20
         // 当获取数据小于20，说明没有更多数据，不需要再次请求数据
-        if (this.shopListArr.length < 20) {
+        if (this.shopListArr.length < 10) {
           return
         }
         this.preventRepeatRequest = false
       },
       // 返回顶部
       backTop () {
-        window.scrollTo(0, 0)
+        animate(document.body, {scrollTop: '0'}, 400, 'ease-out')
       },
       // 传递过来的图片地址需要处理后才能正常使用
       subImgUrl (path) {
@@ -140,6 +151,10 @@
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
 
+  .shoplist_container{
+    background-color: #fff;
+    margin-bottom: 2rem;
+  }
   .shop_li {
     display: flex;
     border-bottom: 0.025rem solid #f1f1f1;
