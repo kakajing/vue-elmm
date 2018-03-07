@@ -209,6 +209,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
+      // 获取food页面配送方式和商家属性活动列表
+      app.get('/api/foodDelivery', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v1/restaurants/filter-bar/attributes'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
     }
 
   },

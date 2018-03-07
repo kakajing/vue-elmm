@@ -11,8 +11,8 @@
             </svg>
           </div>
         </div>
-        <transition name="showlist">
-          <section class="category_container sort_detail_type" v-if="sortBy == 'food'">
+        <transition name="showlist" v-if="category">
+          <section v-show="sortBy == 'food'" class="category_container sort_detail_type">
             <section class="category_left">
               <ul>
                 <li class="category_left_li"
@@ -34,7 +34,9 @@
             </section>
             <section class="category_right">
               <ul>
-                <li v-for="(detailItem, index) in categoryDetail" :key="detailItem.id" class="category_right_li"
+                <li v-for="(detailItem, index) in categoryDetail" :key="detailItem.id"
+                    v-if="index"
+                    class="category_right_li"
                     @click="getCategoryIds(detailItem.id, detailItem.name)"
                     :class="{category_right_choosed: restaurant_category_ids == detailItem.id || (!restaurant_category_ids)&&index == 0}"
                 >
@@ -57,7 +59,7 @@
           </div>
         </div>
         <transition name="showlist">
-          <section class="sort_detail_type" v-if="sortBy == 'sort'">
+          <section class="sort_detail_type" v-show="sortBy == 'sort'">
             <ul class="sort_list_container" @click="sortList($event)">
               <li class="sort_list_li">
                 <svg>
@@ -137,8 +139,35 @@
           </svg>
         </div>
         <transition name="showlist">
-          <section v-if="sortBy == 'activity'" class="sort_detail_type">
-            efsfsdf
+          <section v-show="sortBy == 'activity'" class="sort_detail_type filter_container">
+            <section style="width: 100%;">
+              <header class="filter_header_style">配送方式</header>
+              <ul class="filter_ul">
+                <!--<li v-for="item in delivery" :key="item.id" @click="selectDeliveryMode(item.id)" class="filter_li">-->
+                <li class="filter_li" :key="deliveryId" @click="selectDeliveryMode(deliveryId)">
+                  <svg :style="{opacity: (deliveryId == 0)&&(deliveryMode !== 0)? 0: 1}">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="deliveryMode == deliveryId? '#selected':'#fengniao'"></use>
+                  </svg>
+                  <span :class="{selected_filter: deliveryMode == deliveryId}">{{deliveryName}}</span>
+                </li>
+              </ul>
+            </section>
+            <section style="width: 100%">
+              <header class="filter_header_style">商家属性（可以多选）</header>
+              <ul class="filter_ul" style="padding-bottom: .5rem;">
+                <li class="filter_li" v-for="(item,index) in supports" :key="item.id" @click="selectSupportIds(index, item.id)">
+                  <svg v-show="support_ids[index].status" class="activity_svg">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
+                  </svg>
+                  <span class="filter_icon" :style="{color: '#' + item.icon_color, borderColor: '#' + item.icon_color}">{{item.icon_name}}</span>
+                  <span :class="{selected_filter: support_ids[index].status}">{{item.name}}</span>
+                </li>
+              </ul>
+            </section>
+            <footer class="confirm_filter">
+              <div class="clear_all filter_button_style">清空</div>
+              <div class="confirm_select filter_button_style">确定<span></span></div>
+            </footer>
           </section>
         </transition>
       </div>
@@ -147,7 +176,10 @@
       <div class="back_cover" v-show="sortBy"></div>
     </transition>
     <section class="shop_list_container">
-      <shop-list :geohash="geohash" :restaurantCategoryId="restaurant_category_id" :shopListArr="shopListArr"></shop-list>
+      <shop-list :geohash="geohash" :restaurantCategoryId="restaurant_category_id"
+                 :shopListArr="shopListArr"
+      >
+      </shop-list>
     </section>
   </div>
 </template>
@@ -156,7 +188,7 @@
   import EHeader from 'components/e-header/e-header'
   import ShopList from 'base/shop-list/shop-list'
   import { msiteAdress } from 'api/msite'
-  import {getFoodCategory, getFoodRestaurants} from 'api/food'
+  import { getFoodCategory, getFoodRestaurants, getFoodDelivery } from 'api/food'
   import { imgBaseUrl } from 'common/js/config'
   import { mapState, mapMutations } from 'vuex'
 
@@ -175,7 +207,14 @@
         categoryDetail: null, // category分类右侧的详细数据
         sortByType: null, // 根据何种方式排序
         extras: [],
-        shopListArr: []
+        shopListArr: [],
+        delivery: null,        // 配送方式数据
+        supports: [],        // 商家支持活动数据
+        deliveryMode: null,     // 选中的配送方式
+        support_ids: [],        // 选中的商铺活动列表
+        filterNum: 0,      // 所选中的所有样式的集合
+        deliveryId: '',
+        deliveryName: ''
       }
     },
     computed: {
@@ -210,6 +249,16 @@
           getFoodRestaurants(this.latitude, this.longitude, this.extras, this.restaurant_category_id).then(res2 => {
             this.shopListArr = Array.from(Object.keys(res2.items).map(key => res2.items[key].restaurant))
           })
+
+          getFoodDelivery(this.latitude, this.longitude).then(res3 => {
+            this.delivery = res3.delivery_mode
+            this.deliveryId = res3.delivery_mode.id
+            this.deliveryName = res3.delivery_mode.text
+            this.supports = res3.supports
+            this.supports.forEach((item, index) => {
+              this.support_ids[index] = {status: false, id: item.id}
+            })
+          })
         })
       }
     },
@@ -219,20 +268,74 @@
 //          this.category = resq
 //        })
 //      },
+      // 点击顶部三个选项，展示不同的列表，选中当前选项进行展示，同时收回其他选项
       chooseType (type) {
         if (this.sortBy !== type) {
           this.sortBy = type
+          // food选项中头部标题发生改变，需要特殊处理
           if (type === 'food') {
             this.foodTitle = '分类'
           } else {
+            // 将foodTitle 和 headTitle 进行同步
             this.foodTitle = this.headTitle
           }
         } else {
+          // 再次点击相同选项时收回列表
           this.sortBy = ''
           if (type === 'food') {
             this.foodTitle = this.headTitle
           }
         }
+      },
+      // 选中Category左侧列表的某个选项时，右侧渲染相应的sub_categories列表
+      selectCategoryName (id, index) {
+        // 第一个选项 -- 全部商家 因为没有自己的列表，所以点击则默认获取选所有数据
+        if (index === 0) {
+          this.restaurant_category_ids = null
+          this.sortBy = ''
+        } else {
+          // 不是第一个选项时，右侧展示其子级sub_categories的列表
+          this.restaurant_category_id = id
+          this.categoryDetail = this.category[index].sub_categories
+        }
+      },
+      // 选中Category右侧列表的某个选项时，进行筛选，重新获取数据并渲染
+      getCategoryIds (id, name) {
+        this.restaurant_category_ids = id
+        this.sortBy = ''
+        this.foodTitle = this.headTitle = name
+      },
+      // 点击某个排序方式，获取事件对象的data值，并根据获取的值重新获取数据渲染
+      sortList (event) {
+        this.sortByType = event.target.getAttribute('data')
+        this.sortBy = ''
+      },
+      // 筛选选项中的配送方式选择
+      selectDeliveryMode (id) {
+        // delivery_mode为空时，选中当前项，并且filterNum加一
+        if (this.deliveryMode === null) {
+          this.filterNum++
+          this.deliveryMode = id
+          // delivery_mode为当前已有值时，清空所选项，并且filterNum减一
+        } else if (this.deliveryMode === id) {
+          this.filterNum--
+          this.deliveryMode = null
+          // delivery_mode已有值且不等于当前选择值，则赋值delivery_mode为当前所选id
+        } else {
+          this.deliveryMode = id
+        }
+      },
+      // 点击商家活动，状态取反
+      selectSupportIds (index, id) {
+        // 数组替换新的值
+        this.support_ids.splice(index, 1, {status: !this.support_ids[index].status, id})
+        // 重新计算filterNum的个数
+        this.filterNum = this.delivery_mode === null ? 0 : 1
+        this.support_ids.forEach(item => {
+          if (item.status) {
+            this.filterNum++
+          }
+        })
       },
       // 传递过来的图片地址需要处理后才能正常使用
       subImgUrl (path) {
@@ -245,24 +348,6 @@
         }
         let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
         return url
-      },
-      selectCategoryName (id, index) {
-        if (index === 0) {
-          this.restaurant_category_ids = null
-          this.sortBy = ''
-        } else {
-          this.restaurant_category_id = id
-          this.categoryDetail = this.category[index].sub_categories
-        }
-      },
-      getCategoryIds (id, name) {
-        this.restaurant_category_ids = id
-        this.sortBy = ''
-        this.foodTitle = this.headTitle = name
-      },
-      sortList (event) {
-        this.sortByType = event.target.getAttribute('data')
-        this.sortBy = ''
       },
       ...mapMutations([
         'SET_LATITUDE',
@@ -279,10 +364,11 @@
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
 
-  .food_container{
+  .food_container {
     padding-top: 3.6rem;
   }
-  .sort_container{
+
+  .sort_container {
     background-color: #fff;
     border-bottom: 0.025rem solid #f1f1f1;
     position: fixed;
@@ -292,39 +378,39 @@
     display: flex;
     z-index: 13;
     box-sizing: border-box;
-    .sort_item{
+    .sort_item {
       @include sc(0.55rem, #444);
       @include wh(33.3%, 1.6rem);
       text-align: center;
       line-height: 1rem;
-      .sort_item_container{
+      .sort_item_container {
         @include wh(100%, 100%);
         position: relative;
         z-index: 14;
         background-color: #fff;
         box-sizing: border-box;
         padding-top: .3rem;
-        .sort_item_border{
+        .sort_item_border {
           height: 1rem;
           border-right: 0.025rem solid $bc;
         }
       }
-      .sort_icon{
+      .sort_icon {
         vertical-align: middle;
         transition: all .3s;
-        fill:#666;
+        fill: #666;
       }
 
     }
-    .choose_type{
-      .sort_item_container{
+    .choose_type {
+      .sort_item_container {
 
-        .category_title{
+        .category_title {
           color: $blue;
         }
-        .sort_icon{
+        .sort_icon {
           transform: rotate(180deg);
-          fill:$blue;
+          fill: $blue;
         }
       }
     }
@@ -336,34 +422,29 @@
       opacity: 0;
       transform: translateY(-100%);
     }
-    .sort_detail_type{
+    .sort_detail_type {
       width: 100%;
       position: absolute;
-      display:flex;
+      display: flex;
       top: 1.6rem;
       left: 0;
       border-top: 0.025rem solid $bc;
       background-color: #fff;
     }
-    .category_container{
-      .category_left{
+    .category_container {
+      .category_left {
         flex: 1;
         background-color: #f1f1f1;
         height: 16rem;
         overflow-y: auto;
-        span{
+        span {
           @include sc(0.5rem, #666);
           line-height: 1.8rem;
         }
-        .category_left_li{
+        .category_left_li {
           @include fj;
-          padding:0 0.5rem;
-          /*.category_icon{
-            @include wh(.8rem, .8rem);
-            vertical-align: middle;
-            margin-right: .2rem;
-          }*/
-          .category_count{
+          padding: 0 0.5rem;
+          .category_count {
             background-color: #ccc;
             @include sc(.4rem, #fff);
             padding: 0 .1rem;
@@ -372,54 +453,54 @@
             vertical-align: middle;
             margin-right: 0.25rem;
           }
-          .category_arrow{
+          .category_arrow {
             vertical-align: middle;
           }
         }
-        .category_active{
+        .category_active {
           background-color: #fff;
         }
       }
-      .category_right{
+      .category_right {
         flex: 1;
         background-color: #fff;
         padding-left: 0.5rem;
         height: 16rem;
         overflow-y: auto;
-        .category_right_li{
+        .category_right_li {
           @include fj;
           height: 1.8rem;
           line-height: 1.8rem;
           padding-right: 0.5rem;
           border-bottom: 0 solid $bc;
-          .category_icon{
+          .category_icon {
             @include wh(2rem, 2rem);
             vertical-align: middle;
             margin-right: 0;
           }
-          span{
+          span {
             left: 1rem;
             color: #666;
           }
         }
-        .category_right_choosed{
-          span{
+        .category_right_choosed {
+          span {
             color: $blue;
           }
         }
       }
     }
-    .sort_list_container{
+    .sort_list_container {
       width: 100%;
-      .sort_list_li{
+      .sort_list_li {
         height: 2.5rem;
         display: flex;
         align-items: center;
-        svg{
+        svg {
           @include wh(0.7rem, 0.7rem);
-          margin:0 .3rem 0 .8rem;
+          margin: 0 .3rem 0 .8rem;
         }
-        p{
+        p {
           line-height: 2.5rem;
           flex: auto;
           text-align: left;
@@ -427,23 +508,23 @@
           border-bottom: 0.025rem solid $bc;
           @include fj;
           align-items: center;
-          span{
+          span {
             color: #666;
           }
         }
-        .sort_select{
-          span{
+        .sort_select {
+          span {
             color: $blue;
           }
         }
       }
     }
-    .filter_container{
+    .filter_container {
       flex-direction: column;
       align-items: flex-start;
       min-height: 10.6rem;
       background-color: #f1f1f1;
-      .filter_header_style{
+      .filter_header_style {
         @include sc(0.4rem, #333);
         line-height: 1.5rem;
         height: 1.5rem;
@@ -451,12 +532,12 @@
         padding-left: .5rem;
         background-color: #fff;
       }
-      .filter_ul{
+      .filter_ul {
         display: flex;
         flex-wrap: wrap;
         padding: 0 0.5rem;
         background-color: #fff;
-        .filter_li{
+        .filter_li {
           display: flex;
           align-items: center;
           border: 0.025rem solid #eee;
@@ -465,14 +546,14 @@
           border-radius: 0.125rem;
           padding: 0 0.25rem;
           margin-bottom: 0.25rem;
-          svg{
+          svg {
             @include wh(.8rem, .8rem);
             margin-right: 0.125rem;
           }
-          span{
+          span {
             @include sc(0.4rem, #333);
           }
-          .filter_icon{
+          .filter_icon {
             @include wh(.8rem, .8rem);
             font-size: 0.5rem;
             border: 0.025rem solid $bc;
@@ -481,51 +562,54 @@
             line-height: .8rem;
             text-align: center;
           }
-          .activity_svg{
+          .activity_svg {
             margin-right: .25rem;
           }
-          .selected_filter{
+          .selected_filter {
             color: $blue;
           }
         }
       }
-      .confirm_filter{
+      .confirm_filter {
         display: flex;
         background-color: #f1f1f1;
         width: 100%;
         padding: .3rem .2rem;
-        .filter_button_style{
+        .filter_button_style {
           @include wh(50%, 1.8rem);
           font-size: 0.8rem;
           line-height: 1.8rem;
           border-radius: 0.2rem;
         }
-        .clear_all{
+        .clear_all {
           background-color: #fff;
           margin-right: .5rem;
           border: 0.025rem solid #fff;
         }
-        .confirm_select{
+        .confirm_select {
           background-color: #56d176;
           color: #fff;
           border: 0.025rem solid #56d176;
-          span{
+          span {
             color: #fff;
           }
         }
       }
     }
   }
+
   .showcover-enter-active, .showcover-leave-active {
     transition: opacity .3s
   }
+
   .showcover-enter, .showcover-leave-active {
     opacity: 0
   }
-  .back_cover{
+
+  .back_cover {
     position: fixed;
     @include wh(100%, 100%);
     z-index: 10;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 0, 0, 0.3);
   }
 </style>

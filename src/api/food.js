@@ -38,3 +38,19 @@ export function getFoodRestaurants (latitude, longitude, extras, restaurantCateg
     return Promise.resolve(res.data)
   })
 }
+
+export function getFoodDelivery (latitude, longitude) {
+  const url = '/api/foodDelivery'
+
+  const data = Object.assign({}, {
+    latitude,
+    longitude,
+    terminal: 'h5'
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
