@@ -54,3 +54,50 @@ export function getFoodDelivery (latitude, longitude) {
     return Promise.resolve(res.data)
   })
 }
+
+export function getFoodFilter (latitude, longitude, extras, supportIds, deliveryMode, restaurantCategoryId) {
+  const url = '/api/foodFilter'
+
+  const data = Object.assign({}, {
+    latitude,
+    longitude,
+    keyword: '',
+    offset: 0,
+    limit: 8,
+    extras,
+    terminal: 'h5',
+    rank_id: '',
+    support_ids: supportIds,
+    delivery_mode: deliveryMode,
+    restaurant_category_ids: restaurantCategoryId
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function getFoodSort (latitude, longitude, extras, sortByType, restaurantCategoryId) {
+  const url = '/api/foodSort'
+
+  const data = Object.assign({}, {
+    latitude,
+    longitude,
+    keyword: '',
+    offset: 0,
+    limit: 8,
+    extras,
+    terminal: 'h5',
+    rank_id: '',
+    order_by: sortByType,
+    restaurant_category_ids: restaurantCategoryId
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

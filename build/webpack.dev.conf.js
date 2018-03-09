@@ -223,6 +223,36 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      }),
+      // 获取food页面筛选后的商家列表
+      app.get('/api/foodFilter', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v3/restaurants'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      // 获取food页面筛选后的商家列表
+      app.get('/api/foodSort', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v3/restaurants'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
       })
     }
 

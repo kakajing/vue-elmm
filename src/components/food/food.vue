@@ -60,12 +60,12 @@
         </div>
         <transition name="showlist">
           <section class="sort_detail_type" v-show="sortBy == 'sort'">
-            <ul class="sort_list_container" @click="sortList($event)">
+            <ul class="sort_list_container" @click="foodSort($event)">
               <li class="sort_list_li">
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#default"></use>
                 </svg>
-                <p data="0" :class="{sort_select: sortByType == 0}">
+                <p id="0" :class="{sort_select: sortByType == 0}">
                   <span>智能排序</span>
                   <svg v-if="sortByType == 0">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -76,7 +76,7 @@
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#distance"></use>
                 </svg>
-                <p data="5" :class="{sort_select: sortByType == 5}">
+                <p id="5" :class="{sort_select: sortByType == 5}">
                   <span>距离最近</span>
                   <svg v-if="sortByType == 5">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -87,7 +87,7 @@
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#hot"></use>
                 </svg>
-                <p data="6" :class="{sort_select: sortByType == 6}">
+                <p id="6" :class="{sort_select: sortByType == 6}">
                   <span>销量最高</span>
                   <svg v-if="sortByType == 6">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -98,7 +98,7 @@
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#price"></use>
                 </svg>
-                <p data="1" :class="{sort_select: sortByType == 1}">
+                <p id="1" :class="{sort_select: sortByType == 1}">
                   <span>起送价最低</span>
                   <svg v-if="sortByType == 1">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -109,7 +109,7 @@
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#speed"></use>
                 </svg>
-                <p data="2" :class="{sort_select: sortByType == 2}">
+                <p id="2" :class="{sort_select: sortByType == 2}">
                   <span>配送速度最快</span>
                   <svg v-if="sortByType == 2">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -120,7 +120,7 @@
                 <svg>
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#rating"></use>
                 </svg>
-                <p data="3" :class="{sort_select: sortByType == 3}">
+                <p id="3" :class="{sort_select: sortByType == 3}">
                   <span>评分最高</span>
                   <svg v-if="sortByType == 3">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#selected"></use>
@@ -165,8 +165,11 @@
               </ul>
             </section>
             <footer class="confirm_filter">
-              <div class="clear_all filter_button_style">清空</div>
-              <div class="confirm_select filter_button_style">确定<span></span></div>
+              <div class="clear_all filter_button_style" @click="clearSelect">清空</div>
+              <div class="confirm_select filter_button_style" @click="confirmSelectFun">
+                确定
+                <span v-show="filterNum">({{filterNum}})</span>
+              </div>
             </footer>
           </section>
         </transition>
@@ -177,7 +180,9 @@
     </transition>
     <section class="shop_list_container">
       <shop-list :geohash="geohash" :restaurantCategoryId="restaurant_category_id"
-                 :shopListArr="shopListArr"
+                 :shopListArr="shopListArr" :restaurantCategoryIds="restaurant_category_ids"
+                 :sortByType="sortByType" :deliveryMode="deliveryMode"
+                 :supportIds="support_ids"
       >
       </shop-list>
     </section>
@@ -188,7 +193,7 @@
   import EHeader from 'components/e-header/e-header'
   import ShopList from 'base/shop-list/shop-list'
   import { msiteAdress } from 'api/msite'
-  import { getFoodCategory, getFoodRestaurants, getFoodDelivery } from 'api/food'
+  import { getFoodCategory, getFoodRestaurants, getFoodDelivery, getFoodFilter, getFoodSort } from 'api/food'
   import { imgBaseUrl } from 'common/js/config'
   import { mapState, mapMutations } from 'vuex'
 
@@ -206,7 +211,7 @@
         category: null, // category分类左侧数据
         categoryDetail: null, // category分类右侧的详细数据
         sortByType: null, // 根据何种方式排序
-        extras: [],
+        extras: ['activities', 'tags'],
         shopListArr: [],
         delivery: null,        // 配送方式数据
         supports: [],        // 商家支持活动数据
@@ -227,7 +232,6 @@
       this.headTitle = this.$route.query.title
       this.foodTitle = this.headTitle
       this.restaurant_category_id = this.$route.query.restaurant_category_id
-      this.extras = ['activities', 'tags']
       // 刷新页面时，vuex状态丢失，经度纬度需要重新获取
       if (!this.latitude) {
         // 获取位置信息
@@ -305,11 +309,6 @@
         this.sortBy = ''
         this.foodTitle = this.headTitle = name
       },
-      // 点击某个排序方式，获取事件对象的data值，并根据获取的值重新获取数据渲染
-      sortList (event) {
-        this.sortByType = event.target.getAttribute('data')
-        this.sortBy = ''
-      },
       // 筛选选项中的配送方式选择
       selectDeliveryMode (id) {
         // delivery_mode为空时，选中当前项，并且filterNum加一
@@ -336,6 +335,32 @@
             this.filterNum++
           }
         })
+      },
+      clearAll () {
+        this.deliveryMode = null
+      },
+      // 只有点击清空按钮才清空数据，否则一直保持原有状态
+      clearSelect () {
+        this.support_ids.map(item => {
+          item.status = false
+        })
+        this.filterNum = 0
+      },
+      // 点击确认
+      confirmSelectFun () {
+        getFoodFilter(this.latitude, this.longitude, this.extras, this.support_ids, this.deliveryMode, this.restaurant_category_id).then(res => {
+          this.shopListArr = Array.from(Object.keys(res.items).map(key => res.items[key].restaurant))
+        })
+        this.sortBy = ''
+      },
+      // 点击某个排序方式，获取相应数据
+      foodSort (event) {
+        this.sortByType = event.target.getAttribute('id')
+        console.log(this.sortByType)
+        getFoodSort(this.latitude, this.longitude, this.extras, this.sortByType, this.restaurant_category_id).then(res => {
+          this.shopListArr = Array.from(Object.keys(res.items).map(key => res.items[key].restaurant))
+        })
+        this.sortBy = ''
       },
       // 传递过来的图片地址需要处理后才能正常使用
       subImgUrl (path) {

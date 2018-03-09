@@ -77,7 +77,7 @@
 
   export default{
     mixins: [loadMore],
-    props: ['restaurantCategoryId', 'geohash', 'shopListArr', 'restaurantCategoryIds', 'sortByType'],
+    props: ['restaurantCategoryId', 'geohash', 'shopListArr', 'restaurantCategoryIds', 'sortByType', 'deliveryMode', 'supportIds', 'confirmSelect'],
     data () {
       return {
         imgBaseUrl: imgBaseUrl,
@@ -143,6 +143,14 @@
       shopListArr () {
 //        console.log('bbbbbbbbbbbbbbbb')
 //        console.log(this.shopListArr)
+      },
+      // 监听父级传来的restaurantCategoryIds，当值发生变化的时候重新获取餐馆数据，作用于排序和筛选
+      restaurantCategoryIds (value) {
+      //  this.shopListArr()
+      },
+      // 监听父级传来的排序方式
+      sortByType (value) {
+      //  this.shopListArr()
       }
     }
   }
