@@ -3,6 +3,7 @@
  */
 import axios from 'axios'
 
+// 获取category 种类列表
 export function getFoodCategory (latitude, longitude) {
   const url = '/api/foodCategory'
 

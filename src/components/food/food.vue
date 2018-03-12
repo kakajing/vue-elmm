@@ -267,11 +267,6 @@
       }
     },
     methods: {
-//      foodCategory () {
-//        getFoodCategory(this.latitude, this.longitude).then(resq => {
-//          this.category = resq
-//        })
-//      },
       // 点击顶部三个选项，展示不同的列表，选中当前选项进行展示，同时收回其他选项
       chooseType (type) {
         if (this.sortBy !== type) {

@@ -65,6 +65,9 @@
     </aside>
     <footer class="loader_more" v-show="preventRepeatRequest">正在加载更多商家...</footer>
     <div ref="abc" style="background-color: red"></div>
+    <div class="loading-container" v-show="!shopListArr.length">
+      <loading></loading>
+    </div>
   </div>
 </template>
 
@@ -72,8 +75,8 @@
   import { showBack, animate } from 'common/js/mUtils'
   import { loadMore } from 'common/js/mixin'
   import {imgBaseUrl} from 'common/js/config'
- // import { shopList } from 'api/msite'
   import {mapState} from 'vuex'
+  import Loading from 'base/loading/loading'
 
   export default{
     mixins: [loadMore],
@@ -82,8 +85,7 @@
       return {
         imgBaseUrl: imgBaseUrl,
         preventRepeatRequest: false, // 到达底部加载数据，防止重复加载
-        showBackStatus: false,              // 显示返回顶部按钮
-        extras: []
+        showBackStatus: false              // 显示返回顶部按钮
       }
     },
     computed: {
@@ -99,16 +101,6 @@
       })
     },
     methods: {
-//      initData () {
-//        this.extras = ['activities', 'tags']
-//        shopList(this.latitude, this.longitude, this.extras).then(res => {
-//          console.log(this.latitude)
-//          console.log(res)
-//          this.shopListArr = Array.from(Object.keys(res.items).map(key => res.items[key].restaurant))
-//        //  console.log(this.shopListArr)
-//        })
-//      },
-      // 到达底部加载更多数据
       loaderMore () {
         // 防止重复请求
         if (this.preventRepeatRequest) {
@@ -152,6 +144,9 @@
       sortByType (value) {
       //  this.shopListArr()
       }
+    },
+    components: {
+      Loading
     }
   }
 </script>
@@ -300,5 +295,17 @@
       @include wh(2rem, 2rem);
     }
   }
+  /*.loading-enter-active, .loading-leave-active {
+    transition: opacity 1s;
+  }
+  .loading-enter, .loading-leave-active {
+    opacity: 0;
+  }*/
 
+  .loading-container {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 </style>
