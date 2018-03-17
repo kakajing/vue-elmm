@@ -4,12 +4,12 @@
     <form class="search_form">
       <input type="search" name="search" :placeholder="placeholder" v-model="searchValue" @input="checkInput"
              class="search_input">
-      <input type="submit" name="submit" class="search_submit" @click.prevent="searchTarget">
+      <input type="submit" name="submit" class="search_submit" @click.prevent="searchTarget('')">
     </form>
-    <section>
+    <section v-if="restaurantList.length">
       <h4 class="title_restaurant">商家</h4>
       <ul class="list_container">
-        <router-link :to="{path: '/shop', query: {}}" tag="li" v-for="item in restaurantFood" :key="item.id"
+        <router-link :to="{path: '/shop', query: {id:item.id}}" tag="li" v-for="item in restaurantFood" :key="item.id"
                      class="list_li">
           <section class="item_left">
             <img :src="imgBaseUrl + subImgUrl(item.image_path)" class="restaurant_img">
@@ -43,9 +43,17 @@
     <section class="search_history" v-if="searchHistory.length&&showHistory">
       <h4 class="title_restaurant">搜索历史</h4>
       <ul>
-        <li v-for="history in searchHistory">{{history}}</li>
+        <li v-for="(item, index) in searchHistory" :key="index" class="history_list">
+          <span class="history_text ellipsis" @click="searchTarget(item)">{{item}}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="delete_icon" @click="deleteHistory(index)">
+            <line x1="8" y1="8" x2="18" y2="18" style="stroke:#999;stroke-width:3" />
+            <line x1="18" y1="8" x2="8" y2="18" style="stroke:#999;stroke-width:3" />
+          </svg>
+        </li>
       </ul>
+      <footer class="clear_history" @click="clearAllHistory">清空搜索历史</footer>
     </section>
+    <div class="search_none" v-if="emptyResult">很抱歉！无搜索结果</div>
   </div>
 </template>
 
@@ -68,12 +76,13 @@
         restaurant: [],      // 搜索返回结果中的餐厅
         restaurantList: [],  // 搜索返回的结果
         restaurantFood: [],  // 搜索返回结果中的food
-        searchHistory: [],
+        searchHistory: [],    // 搜索历史记录
         imgBaseUrl: imgBaseUrl,
-        showHistory: true,
+        showHistory: true,    // 是否显示历史记录，只有在返回搜索结果后隐藏
         latitude: '',
         longitude: '',
-        extras: ''
+        extras: '',
+        emptyResult: false  // 搜索结果为空时显示
       }
     },
     mounted () {
@@ -85,27 +94,34 @@
     methods: {
       checkInput () {
         if (this.searchValue === '') {
-          this.showHistory = true
-          this.restaurantList = []
+          this.showHistory = true  // 显示历史记录
+          this.restaurantList = []  // 清空搜索结果
+          this.emptyResult = false  // 隐藏搜索为空提示
         }
       },
-      searchTarget () {
+      // 点击提交按钮，搜索结果显示，同时将搜索内容存入历史记录
+      searchTarget (historyValue) {
         this.extras = ['activities', 'coupon']
-        if (!this.searchValue) {
+        if (historyValue) {
+          this.searchHistory = historyValue
+        } else if (!this.searchValue) {
           return
         }
+        // 隐藏历史记录
         this.showHistory = false
         getGuess().then((res) => {
           this.latitude = res.latitude
           this.longitude = res.longitude
+          // 获取搜索结果
           searchRestaurant(this.searchValue, this.latitude, this.longitude, this.extras).then((res) => {
             this.restaurantList = res.inside[3].restaurant_with_foods
             this.restaurantList.forEach(item => {
               this.restaurant = item.restaurant
               this.restaurantFood = item.foods
-              console.log(this.restaurantFood[0].activities)
+            //  console.log(this.restaurantList)
             })
           })
+          this.emptyResult = !this.restaurantList.length
         })
         /**
          * 点击搜索结果进入下一页面时进行判断是否已经有一样的历史记录
@@ -126,6 +142,16 @@
         } else {
           this.searchHistory.push(this.searchValue)
         }
+        setStore('searchHistory', this.searchHistory)
+      },
+      deleteHistory (index) {
+        // 点击删除按钮，删除当前历史记录
+        this.searchHistory.splice(index, 1)
+        setStore('searchHistory', this.searchHistory)
+      },
+      // 清除所有历史记录
+      clearAllHistory () {
+        this.searchHistory = []
         setStore('searchHistory', this.searchHistory)
       },
       // 传递过来的图片地址需要处理后才能正常使用

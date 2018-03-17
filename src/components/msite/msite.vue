@@ -134,6 +134,7 @@
         let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
         return url
       },
+      // 解码url地址，求restaurant_category_id值
       getCategoryId (url) {
        // let urlData = decodeURIComponent(url).split('=')[3].split(':')[3].replace('}&navType', '')
         let urlData = decodeURIComponent(url).split('=')[3].replace('&navType', '')
