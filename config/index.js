@@ -11,8 +11,8 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      'restapi': {
-        target: 'https://www.ele.me/restapi',
+      '/restapi': {
+        target: 'https://h5.ele.me',
         changeOrigin: true,
         pathRewrite: {
           '^/restapi': '/'

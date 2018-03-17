@@ -19,6 +19,7 @@ export function getFoodCategory (latitude, longitude) {
   })
 }
 
+// 获取商铺列表
 export function getFoodRestaurants (latitude, longitude, extras, restaurantCategoryIds) {
   const url = '/api/restaurants'
 
@@ -40,6 +41,7 @@ export function getFoodRestaurants (latitude, longitude, extras, restaurantCateg
   })
 }
 
+// 获取配送方式和商家属性活动列表
 export function getFoodDelivery (latitude, longitude) {
   const url = '/api/foodDelivery'
 
@@ -56,6 +58,7 @@ export function getFoodDelivery (latitude, longitude) {
   })
 }
 
+// 获取筛选后的商家列表
 export function getFoodFilter (latitude, longitude, extras, supportIds, deliveryMode, restaurantCategoryId) {
   const url = '/api/foodFilter'
 
@@ -80,6 +83,7 @@ export function getFoodFilter (latitude, longitude, extras, supportIds, delivery
   })
 }
 
+//
 export function getFoodSort (latitude, longitude, extras, sortByType, restaurantCategoryId) {
   const url = '/api/foodSort'
 
