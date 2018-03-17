@@ -16,20 +16,7 @@
           <h5 class="rating_order_num">
             <section class="rating_order_num_left">
               <section class="rating_section">
-                <div class="rating_container">
-                  <span class="star_container">
-                    <svg class="grey_fill" v-for="itemNum1 in 5" :key="itemNum1">
-											<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#star"></use>
-										</svg>
-                  </span>
-                  <div class="star_overflow" :style="'width:' + item.rating*2/5 + 'rem'">
-                    <span class="star_container">
-                      <svg class="orange_fill" v-for="itemNum2 in 5" :key="itemNum2">
-												<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#star"></use>
-											</svg>
-                    </span>
-                  </div>
-                </div>
+                <rating-star :rating="item.rating"></rating-star>
                 <span class="rating_num">{{item.rating}}</span>
               </section>
               <section class="order_section">月售{{item.recent_order_num}}单</section>
@@ -77,6 +64,7 @@
   import {imgBaseUrl} from 'common/js/config'
   import {mapState} from 'vuex'
   import Loading from 'base/loading/loading'
+  import RatingStar from 'base/rating-star/rating-star'
 
   export default{
     mixins: [loadMore],
@@ -146,7 +134,8 @@
       }
     },
     components: {
-      Loading
+      Loading,
+      RatingStar
     }
   }
 </script>
