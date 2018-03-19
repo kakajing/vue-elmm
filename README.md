@@ -30,6 +30,18 @@ vue2 + vuex + vue-router + axios + webpack + ES6 + sass + flex + svg
 
 ## Build Setup
 
+### 注意：
+
+项目下载完先npm install，然后npm run dev运行后会发现报这样的错：
+
+`Module build failed: Error: Cannot find module 'node-sass'`
+
+解决方法：
+
+`npm install node-sass sass-loader --save-dev`
+
+安装完后运行项目就正常了。
+
 ``` bash
 # install dependencies
 npm install
