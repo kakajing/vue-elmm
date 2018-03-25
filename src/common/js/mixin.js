@@ -72,7 +72,7 @@ export const getImgPath = {
       if (!path) {
         return 'http://test.fe.ptdev.cn/elm/elmlogo.jpeg'
       }
-      if (path.indexOf('jpeg' !== -1)) {
+      if (path.indexOf('jpeg') !== -1) {
         suffix = '.jpeg'
       } else {
         suffix = '.png'
