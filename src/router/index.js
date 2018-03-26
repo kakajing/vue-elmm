@@ -13,7 +13,7 @@ import Search from 'components/search/search'
 import Shop from 'components/shop/shop'
 import Vipcard from 'components/vipcard/vipcard'
 import Food from 'components/food/food'
-// import Rating from 'components/shop/child/rating'
+import FoodDetail from 'components/shop/children/foodDetail'
 
 Vue.use(Router)
 
@@ -70,7 +70,13 @@ export default new Router({
         },
         {
           path: '/shop',
-          component: Shop   // 商铺详情页
+          component: Shop,   // 商铺详情页
+          children: [
+            {
+              path: 'foodDetail',    // 食品详情页
+              component: FoodDetail
+            }
+          ]
         },
         {
           path: '/vipcard',
