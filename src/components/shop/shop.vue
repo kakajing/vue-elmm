@@ -142,7 +142,8 @@
       </section>
       <section class="gotopay" :class="{gotopay_acitvity: minimumOrderAmount < 0}">
         <span class="gotopay_button_style" v-if="minimumOrderAmount > 0">还差¥{{minimumOrderAmount}}起送</span>
-        <span class="gotopay_button_style" v-else >去结算</span>
+        <!--<span class="gotopay_button_style" v-else >去结算</span>-->
+        <router-link to="/confirmOrder" class="gotopay_button_style" v-else>去结算</router-link>
       </section>
     </section>
     <!--购物车展示食品列表-->

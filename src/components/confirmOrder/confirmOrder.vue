@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div>
     <e-header :head-title="headTitle" :go-back="goBack"></e-header>
-    <div>重置密码</div>
+    <div class="confirmOderContainer">确认订单页</div>
   </div>
 </template>
 
@@ -11,7 +11,7 @@
   export default {
     data () {
       return {
-        headTitle: '重置密码',
+        headTitle: '确认订单',
         goBack: true
       }
     },
@@ -24,7 +24,7 @@
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
 
-  .container{
+  .confirmOrderContainer{
     padding-top: 1.95rem;
   }
 </style>

@@ -13,6 +13,7 @@
     </section>
     <slot name="msite-title"></slot>
     <slot name="changCity"></slot>
+    <slot name="changeLogin"></slot>
   </header>
 </template>
 
