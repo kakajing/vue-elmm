@@ -55,6 +55,7 @@
     <div class="loading-container" v-show="!shopListArr.length">
       <loading></loading>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 

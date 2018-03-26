@@ -208,7 +208,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
-      })
+      }),
       // 获取food页面配送方式和商家属性活动列表
       app.get('/api/foodDelivery', (req, res) => {
         const url = 'https://h5.ele.me/restapi/shopping/v1/restaurants/filter-bar/attributes'
@@ -246,6 +246,34 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           headers: {
             Host: 'h5.ele.me',
             Referer: 'https://h5.ele.me/msite/food/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      //  获取shop页面商铺详情
+      app.get('/api/shopDetails', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/restaurant/1046670'
+        axios.get(url, {
+          headers: {
+            referer: 'https://h5.ele.me/shop/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      app.get('/api/menuList', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v2/menu'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/shop/'
           },
           params: req.query
         }).then((response) => {

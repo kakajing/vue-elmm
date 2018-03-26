@@ -228,45 +228,49 @@
       ])
     },
     created () {
-      this.geohash = this.$route.query.geohash
-      this.headTitle = this.$route.query.title
-      this.foodTitle = this.headTitle
-      this.restaurant_category_id = this.$route.query.restaurant_category_id
-      // 刷新页面时，vuex状态丢失，经度纬度需要重新获取
-      if (!this.latitude) {
-        // 获取位置信息
-        msiteAdress().then(res => {
-          // 记录当前经度纬度
-          this.SET_LATITUDE(res.latitude)
-          this.SET_LONGITUDE(res.longitude)
-          // 获取category 种类列表
-          getFoodCategory(this.latitude, this.longitude).then(resq => {
-            this.category = resq
-            this.category.forEach(item => {
-              if (this.restaurant_category_id === item.id) {
-                this.categoryDetail = item.sub_categories
-              }
-            })
-          })
-
-          // 获取商铺列表
-          getFoodRestaurants(this.latitude, this.longitude, this.extras, this.restaurant_category_id).then(res2 => {
-            this.shopListArr = Array.from(Object.keys(res2.items).map(key => res2.items[key].restaurant))
-          })
-
-          getFoodDelivery(this.latitude, this.longitude).then(res3 => {
-            this.delivery = res3.delivery_mode
-            this.deliveryId = res3.delivery_mode.id
-            this.deliveryName = res3.delivery_mode.text
-            this.supports = res3.supports
-            this.supports.forEach((item, index) => {
-              this.support_ids[index] = {status: false, id: item.id}
-            })
-          })
-        })
-      }
+      this.initData()
     },
     methods: {
+      initData () {
+        this.geohash = this.$route.query.geohash
+        this.headTitle = this.$route.query.title
+        this.foodTitle = this.headTitle
+        this.restaurant_category_id = this.$route.query.restaurant_category_id
+        // 刷新页面时，vuex状态丢失，经度纬度需要重新获取
+        if (!this.latitude) {
+          // 获取位置信息
+          msiteAdress().then(res => {
+            // 记录当前经度纬度
+            this.SET_LATITUDE(res.latitude)
+            this.SET_LONGITUDE(res.longitude)
+            // 获取category 种类列表
+            getFoodCategory(this.latitude, this.longitude).then(resq => {
+              this.category = resq
+              this.category.forEach(item => {
+                if (this.restaurant_category_id === item.id) {
+                  this.categoryDetail = item.sub_categories
+                }
+              })
+            })
+
+            // 获取商铺列表
+            getFoodRestaurants(this.latitude, this.longitude, this.extras, this.restaurant_category_id).then(res2 => {
+              this.shopListArr = Array.from(Object.keys(res2.items).map(key => res2.items[key].restaurant))
+            })
+
+            // 获取筛选列表的配送方式及商铺活动
+            getFoodDelivery(this.latitude, this.longitude).then(res3 => {
+              this.delivery = res3.delivery_mode
+              this.deliveryId = res3.delivery_mode.id
+              this.deliveryName = res3.delivery_mode.text
+              this.supports = res3.supports
+              this.supports.forEach((item, index) => {
+                this.support_ids[index] = {status: false, id: item.id}
+              })
+            })
+          })
+        }
+      },
       // 点击顶部三个选项，展示不同的列表，选中当前选项进行展示，同时收回其他选项
       chooseType (type) {
         if (this.sortBy !== type) {

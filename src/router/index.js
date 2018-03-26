@@ -13,6 +13,7 @@ import Search from 'components/search/search'
 import Shop from 'components/shop/shop'
 import Vipcard from 'components/vipcard/vipcard'
 import Food from 'components/food/food'
+// import Rating from 'components/shop/child/rating'
 
 Vue.use(Router)
 

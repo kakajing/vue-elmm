@@ -54,7 +54,7 @@
                 <line x1="0" y1="16" x2="16" y2="0"  stroke="#666" stroke-width="1.2"/>
               </svg>
             </header>
-            <section class="specs_details">
+            <section class="specs_details" >
               <h5 class="specs_details_title">{{foods.specifications[0].name}}</h5>
               <ul>
                 <li v-for="(item, itemIndex) in foods.specifications[0].values" :class="{specs_activity: itemIndex == specsIndex}" @click="chooseSpecs(itemIndex)">
