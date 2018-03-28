@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/restapi': {
-        target: 'https://h5.ele.me',
+        target: 'https://h5.ele.me/restapi',
         changeOrigin: true,
         pathRewrite: {
           '^/restapi': '/'

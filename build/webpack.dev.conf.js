@@ -268,6 +268,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       }),
+       // 获取shop页面菜单列表
       app.get('/api/menuList', (req, res) => {
         const url = 'https://h5.ele.me/restapi/shopping/v2/menu'
         axios.get(url, {
@@ -280,6 +281,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json(response.data)
         }).catch((e) => {
           console.log(e)
+        })
+      }),
+      // 获取短信验证码
+      app.post('/api/mobileCode', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/eus/login/mobile_send_code'
+        axios.post(url, res.json({data: res.payload}), {
+          headers: {
+            referer: 'https://h5.ele.me/login/'
+          }
         })
       })
     }

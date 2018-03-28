@@ -134,8 +134,8 @@
       },
       //多规格商品加入购物车
       addSpecs(category_id, item_id, food_id, name, price, specs){
-        this.$emit('add', category_id, item_id, food_id, name, price, specs);
-        this.showChooseList();
+        this.$emit('add', category_id, item_id, food_id, name, price, specs)
+        this.showChooseList()
       },
       //点击多规格商品的减按钮，弹出提示
       showReduceTip(){
@@ -144,7 +144,7 @@
         this.timer = setTimeout(() => {
           clearTimeout(this.timer)
           this.showDeleteTip = false
-        }, 3000);
+        }, 3000)
       },
       beforeEnter(el){
         el.style.transform = `translate3d(0,${39 + this.elBottom - this.windowHeight}px,0)`

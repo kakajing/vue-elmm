@@ -302,7 +302,7 @@
        * 初始化和shopCart变化时，重新获取购物车改变过的数据，赋值 categoryNum，totalPrice，cartFoodList，
        * 整个数据流是自上而下的形式，所有的购物车数据都交给vuex统一管理，包括购物车组件中自身的商品数量，使整个数据流更加清晰
        */
-      initCategoryNum () {
+      initCategoryNum ()  {
         //左侧食品列表当前分类中已加入购物车的商品数量
         let newArr = []
         let cartFoodNum = 0

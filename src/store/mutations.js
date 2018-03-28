@@ -75,6 +75,16 @@ const mutations = {
     state.cartList[shopId] = null
     state.cartList = Object.assign({}, state.cartList)
     setStore('buyCart', state.cartList)
+  },
+  [types.RECORD_SHOPDETAIL] (state, info) {
+    state.userInfo = info
+    setStore('userInfo', info)
+  },
+  [types.GET_USERINFO] (state) {
+    let info = getStore('userInfo')
+    if (info) {
+      state.userInfo = JSON.parse(info)
+    }
   }
 }
 
