@@ -4,7 +4,7 @@
     <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
       <img :src="getImgPath(img)" class="header_cover_img">
       <section class="description_header">
-        <section class="description_top" @click="showActivitiesFun">
+        <router-link to="/shop/shopDetail" class="description_top">
           <section class="description_left">
             <img :src="getImgPath(img)">
           </section>
@@ -16,7 +16,7 @@
           <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" version="1.1" class="description_arrow" >
             <path d="M0 0 L8 7 L0 14"  stroke="#fff" stroke-width="1" fill="none"/>
           </svg>
-        </section>
+        </router-link>
         <footer class="description_footer"  v-if="shopDetailData.activities.length" @click="showActivitiesFun">
           <p class="ellipsis">
             <span class="tip_icon" :style="{backgroundColor: '#' + shopDetailData.activities[0].icon_color, borderColor: '#' + shopDetailData.activities[0].icon_color}">{{shopDetailData.activities[0].icon_name}}></span>
@@ -245,6 +245,7 @@
         shopDetails(this.extras, this.latitude, this.longitude).then(res => {
           this.shopDetailData = res
           this.img = res.image_path
+          this.RECORD_SHOPDETAIL(this.shopDetailData)
         })
 
         // 获取商铺食品列表
@@ -435,7 +436,8 @@
         'ADD_CART',
         'REDUCE_CART',
         'INIT_BUYCART',
-        'CLEAR_CART'
+        'CLEAR_CART',
+        'RECORD_SHOPDETAIL'
       ])
     },
     watch: {

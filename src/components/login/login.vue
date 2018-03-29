@@ -50,7 +50,10 @@
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
-  import { getMobileCode } from 'api/login'
+  import { getMobileCode, captchas, login } from 'api/login'
+  import {mapMutations} from 'vuex'
+  import axios from 'axios'
+  import qs from 'qs'
 
   export default {
     data () {
@@ -67,8 +70,12 @@
         passWord: null,
         captchaCodeImg: null,
         codeNumber: null,     //验证码
-        showAlert: false   //显示提示组件
+        showAlert: false,   //显示提示组件
+        alertText: null     //提示的内容
       }
+    },
+    created () {
+      this.getCaptchaCode()
     },
     methods: {
       changeLoginWay () {
@@ -89,6 +96,11 @@
         let captcha_value = ''
         let mobile = this.phoneNumber
 
+        let data = {
+          captcha_hash: '',
+          captcha_value: '',
+          mobile: this.phoneNumber
+        }
         if (this.rightPhoneNumber) {
           this.computedTime = 30
           this.timer = setInterval(() => {
@@ -107,10 +119,49 @@
         if (this.loginWay) {
           if (!this.rightPhoneNumber) {
             this.showAlert = true
+            this.alertText = '手机号码不正确'
+            return
+          } else if (/^\d{6}$/gi.test(this.mobileCode)) {
+            this.showAlert = true
+            this.alertText = '短信验证码不正确'
+            return
           }
+
+        } else {
+          if (!this.userAccount) {
+            this.showAlert = true
+            this.alertText = '请输入手机号/邮箱/用户名'
+            return
+          } else if (!this.passWord) {
+            this.showAlert = true
+            this.alertText = '请输入密码'
+            return
+          } else if (!this.codeNumber) {
+            this.showAlert = true
+            this.alertText = '请输入验证码'
+            return
+          }
+
+        }
+        if (this.userInfo.message) {
+          this.showAlert = true
+          this.alertText = this.userInfo.message
+          if (!this.loginWay) this.getCaptchaCode()
+        }else{
+          this.RECORD_USERINFO(this.userInfo)
+          this.$router.go(-1)
+
         }
       },
-      getCaptchaCode () {}
+      getCaptchaCode () {
+        let captcha_str = this.phoneNumber
+        captchas(captcha_str).then(res => {
+          console.log(res)
+        })
+      },
+      ...mapMutations([
+        'RECORD_USERINFO',
+      ])
     },
     components: {
       EHeader

@@ -15,6 +15,7 @@ import Vipcard from 'components/vipcard/vipcard'
 import Food from 'components/food/food'
 import FoodDetail from 'components/shop/children/foodDetail'
 import ConfirmOrder from 'components/confirmOrder/confirmOrder'
+import ShopDetail from 'components/shop/children/shopDetail'
 
 Vue.use(Router)
 
@@ -76,6 +77,10 @@ export default new Router({
             {
               path: 'foodDetail',    // 食品详情页
               component: FoodDetail
+            },
+            {
+              path: 'shopDetail',    //商铺详情页
+              component: ShopDetail
             }
           ]
         },

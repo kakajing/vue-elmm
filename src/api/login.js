@@ -3,11 +3,10 @@
  */
 import axios from 'axios'
 import qs from 'qs'
-// import * as API from './index'
 
 // 获取短信验证码
 export function getMobileCode (mobile) {
-  return axios.post('/api/mobileCode', qs.stringify(mobile), {
+  return axios.post('/api/MUrl', qs.stringify(mobile), {
     headers: {
       'Content-Type': 'application/json; charset=UTF-8'
     }
@@ -15,5 +14,9 @@ export function getMobileCode (mobile) {
 }
 
 export function captchas (captcha_str) {
-  // return axios.post('/eus/v3/captchas', captcha_str)
+   return axios.post('/api/captchas', qs.stringify(captcha_str))
+}
+
+export function login (username, password) {
+  return axios.post('/api/login', qs.stringify(username, password))
 }

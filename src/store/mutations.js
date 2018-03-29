@@ -76,7 +76,10 @@ const mutations = {
     state.cartList = Object.assign({}, state.cartList)
     setStore('buyCart', state.cartList)
   },
-  [types.RECORD_SHOPDETAIL] (state, info) {
+  [types.RECORD_SHOPDETAIL] (state, detail) {
+    state.shopDetail = detail
+  },
+  [types.RECORD_USERINFO] (state, info) {
     state.userInfo = info
     setStore('userInfo', info)
   },

@@ -284,12 +284,40 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       }),
       // 获取短信验证码
-      app.post('/api/mobileCode', (req, res) => {
+      app.get('/api/mobileCode', (req, res) => {
         const url = 'https://h5.ele.me/restapi/eus/login/mobile_send_code'
         axios.post(url, res.json({data: res.payload}), {
           headers: {
             referer: 'https://h5.ele.me/login/'
           }
+        })
+      }),
+      app.get('/api/captchas', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/eus/v3/captchas'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/login/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      app.get('/api/login', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/eus/login/login_by_password'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/login/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
         })
       })
     }
