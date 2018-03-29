@@ -16,6 +16,7 @@ import Food from 'components/food/food'
 import FoodDetail from 'components/shop/children/foodDetail'
 import ConfirmOrder from 'components/confirmOrder/confirmOrder'
 import ShopDetail from 'components/shop/children/shopDetail'
+import ShopSafe from 'components/shop/children/children/shopSafe'
 
 Vue.use(Router)
 
@@ -80,7 +81,13 @@ export default new Router({
             },
             {
               path: 'shopDetail',    //商铺详情页
-              component: ShopDetail
+              component: ShopDetail,
+              children: [
+                {
+                  path: 'shopSafe',   //商铺安全认证页
+                  component: ShopSafe
+                }
+              ]
             }
           ]
         },
