@@ -91,7 +91,7 @@
         // 保存数据
         setStore('placeHistory', this.placeHistory)
         this.$router.push({path: '/msite', query: {geohash}})
-      }
+      },
     },
     components: {
       EHeader

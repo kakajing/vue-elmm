@@ -50,10 +50,11 @@
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
-  import { getMobileCode, captchas, login } from 'api/login'
+  import { getMobileCode, captchas, accountLogin, sendLogin } from 'api/login'
   import {mapMutations} from 'vuex'
   import axios from 'axios'
   import qs from 'qs'
+  import {base64ToBlob} from 'common/js/config'
 
   export default {
     data () {
@@ -61,11 +62,14 @@
         goBack: true,
         loginWay: true,        //登录方式，默认短信登录
         phoneNumber: null,     //电话号码
+        captcha_hash: '',
+        captcha_value: '',
         showPassword: false,
         rightPhoneNumber: false,   //输入的手机号码是否符合要求
         computedTime: 0,       //倒数记时
         mobileCode: null,      //短信验证码
         validate_token: null,    //获取短信时返回的验证值，登陆时需要
+        userInfo: null,          //获取到的用户信息
         userAccount: null,
         passWord: null,
         captchaCodeImg: null,
@@ -92,12 +96,9 @@
         }
       },
       getVerifyCode () {
-        let captcha_hash = ''
-        let captcha_value = ''
-        let mobile = this.phoneNumber
-
+        let value = base64ToBlob(this.captchaCodeImg)
         let data = {
-          captcha_hash: '',
+          captcha_hash: this.captcha_hash,
           captcha_value: '',
           mobile: this.phoneNumber
         }
@@ -109,24 +110,37 @@
               clearInterval(this.timer)
             }
           }, 1000)
-          getMobileCode(captcha_hash, captcha_value, mobile).then((res) => {
+          getMobileCode(data).then((res) => {
+         //   console.log(res)
             this.validate_token = res.validate_token
-            console.log(this.validate_token)
           })
         }
       },
       mobileLogin () {
+        let accountData = {
+          captcha_hash: this.captcha_hash,
+          captcha_value: this.captcha_value,
+          username: this.userAccount,
+          password: this.passWord
+        }
+        let sendData = {
+          mobile: this.phoneNumber,
+          validate_code: this.mobileCode,
+          validate_token: this.validate_token
+        }
         if (this.loginWay) {
           if (!this.rightPhoneNumber) {
             this.showAlert = true
             this.alertText = '手机号码不正确'
             return
-          } else if (/^\d{6}$/gi.test(this.mobileCode)) {
+          } else if (!(/^\d{6}$/gi.test(this.mobileCode))) {
             this.showAlert = true
             this.alertText = '短信验证码不正确'
             return
           }
-
+          sendLogin(sendData).then(res => {
+            console.log(res)
+          })
         } else {
           if (!this.userAccount) {
             this.showAlert = true
@@ -141,9 +155,12 @@
             this.alertText = '请输入验证码'
             return
           }
-
+          accountLogin(accountData).then(res => {
+            this.userInfo = res
+            console.log(res)
+          })
         }
-        if (this.userInfo.message) {
+        if (this.userInfo.user_id) {
           this.showAlert = true
           this.alertText = this.userInfo.message
           if (!this.loginWay) this.getCaptchaCode()
@@ -156,7 +173,9 @@
       getCaptchaCode () {
         let captcha_str = this.phoneNumber
         captchas(captcha_str).then(res => {
-          console.log(res)
+        //  console.log(res.data.captcha_image)
+          this.captchaCodeImg = res.data.captcha_image
+          this.captcha_hash = res.data.captcha_hash
         })
       },
       ...mapMutations([

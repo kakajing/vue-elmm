@@ -242,7 +242,7 @@
         this.SET_LONGITUDE(res.longitude)
 
         // 获取商铺信息
-        shopDetails(this.extras, this.latitude, this.longitude).then(res => {
+        shopDetails(this.shopId, this.extras, this.latitude, this.longitude).then(res => {
           this.shopDetailData = res
           this.img = res.image_path
           this.RECORD_SHOPDETAIL(this.shopDetailData)

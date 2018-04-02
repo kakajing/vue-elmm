@@ -98,18 +98,31 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import {mapState} from 'vuex'
+//  import {qualification} from 'api/shop'
 
   export default {
     data () {
       return {
         headTitle: '食品监督安全公示',
-        goBack: true
+        goBack: true,
+        restaurant_id: ''
       }
     },
     computed: {
       ...mapState([
-        'shopDetail'
+        'shopDetail', 'latitude', 'longitude'
       ]),
+    },
+    mounted () {
+      this.restaurant_id = this.$route.query.restaurant_id
+      console.log(this.restaurant_id)
+    },
+    methods: {
+//      getQualification () {
+//        qualification(this.restaurant_id, this.latitude, this.longitude).then(res => {
+//          console.log(res)
+//        })
+//      }
     },
     components: {
       EHeader

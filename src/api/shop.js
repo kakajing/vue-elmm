@@ -7,10 +7,8 @@ import axios from 'axios'
 /**
  *  获取shop页面商铺详情
  */
-export function shopDetails (extras, latitude, longitude) {
-  const url = '/api/shopDetails'
-  // const url = `/api/shopDetails/${id}`
-
+export function shopDetails (shopId, extras, latitude, longitude) {
+  const url = '/restapi/shopping/restaurant/' + shopId
   const data = Object.assign({}, {
     extras,
     terminal: 'h5',
@@ -31,6 +29,22 @@ export function menuList (id) {
 
   const data = Object.assign({}, {
     restaurant_id: id
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function qualification (id, latitude, longitude) {
+  const url = '/restapi/shopping/v1/restaurants/' + id + '/business/qualification'
+
+  const data = Object.assign({}, {
+    latitude,
+    longitude,
+    terminal: 'h5'
   })
 
   return axios.get(url, {
