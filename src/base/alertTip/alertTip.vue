@@ -1,12 +1,12 @@
 <template>
-  <div class="alet_container">
+  <div class="alert_container">
     <section class="tip_text_container">
       <div class="tip_icon">
         <span></span>
         <span></span>
       </div>
       <p class="tip_text"></p>
-      <div class="confrim" @click="closeTip">确认</div>
+      <div class="confirm" @click="closeTip">确认</div>
     </section>
   </div>
 </template>
@@ -37,7 +37,7 @@
     70%  { transform: scale(1.1) }
     100% { transform: scale(1) }
   }
-  .alet_container{
+  .alert_container{
     position: fixed;
     top: 0;
     left: 0;
@@ -89,7 +89,7 @@
       margin-top: .8rem;
       padding: 0 .4rem;
     }
-    .confrim{
+    .confirm{
       @include sc(.8rem, #fff);
       font-weight: bold;
       margin-top: .8rem;
