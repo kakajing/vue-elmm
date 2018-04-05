@@ -53,3 +53,42 @@ export function qualification (id, latitude, longitude) {
     return Promise.resolve(res.data)
   })
 }
+
+/**
+ * 获取商铺评价分数
+ */
+export function ratingScores (id) {
+  const url = '/restapi/ugc/v2/restaurants/' + id + '/ratings/scores'
+
+  return axios.get(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+/**
+ * 获取商铺评价分类
+ */
+export function ratingTags (id) {
+  const url = '/restapi/ugc/v2/restaurants/' + id + '/ratings/tags'
+
+  return axios.get(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+/**
+ * 获取商铺评价列表
+ */
+export function ratings (id) {
+  const url = '/restapi/ugc/v3/restaurants/' + id + '/ratings'
+  const data = Object.assign({}, {
+    has_content: true,
+    offset: 0,
+    limit: 8
+  })
+
+  return axios.get(url, {params: data}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
