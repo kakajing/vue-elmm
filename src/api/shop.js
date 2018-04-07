@@ -92,3 +92,19 @@ export function ratings (id) {
   })
 }
 
+/**
+ * 选择某个ratingTag获取相应的数据
+ */
+export function tatingTagName (id, tagName) {
+  const url = '/restapi/ugc/v2/restaurants/' + id + '/ratings'
+  const data = Object.assign({}, {
+    has_content: true,
+    tag_name: tagName,
+    offset: 0,
+    limit: 8
+  })
+
+  return axios.get(url, {params: data}).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}

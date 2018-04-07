@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import App from '../App'
-import Checkout from 'components/checkout/checkout'
+// import Checkout from 'components/checkout/checkout'
 import City from 'components/city/city'
 import Forget from 'components/forget/forget'
 import Home from 'components/home/home'
@@ -17,6 +17,7 @@ import FoodDetail from 'components/shop/children/foodDetail'
 import ConfirmOrder from 'components/confirmOrder/confirmOrder'
 import ShopDetail from 'components/shop/children/shopDetail'
 import ShopSafe from 'components/shop/children/children/shopSafe'
+import OrderDetail from 'components/order/children/orderDetail'
 
 Vue.use(Router)
 
@@ -33,10 +34,6 @@ export default new Router({
         {
           path: '/home',
           component: Home  // 首页城市列表页
-        },
-        {
-          path: '/checkout',
-          component: Checkout  // 确认订单页
         },
         {
           path: '/city/:cityId',
@@ -61,7 +58,13 @@ export default new Router({
         },
         {
           path: '/order',
-          component: Order  // 订单列表页
+          component: Order,  // 订单列表页
+          children: [
+            {
+              path: 'orderDetail',     //订单详情页
+              component: OrderDetail
+            }
+          ]
         },
         {
           path: '/profile',

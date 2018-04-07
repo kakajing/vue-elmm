@@ -77,8 +77,10 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import {mapState, mapMutations} from 'vuex'
+
   export default {
-    props:['foods', 'shopCart'],
+    props:['foods', 'shopId'],
     data(){
       return{
         showSpecs: false,//控制显示食品规格
@@ -107,18 +109,27 @@
         }else {
           return 0
         }
-      }
+      },
+      /**
+       * 监听cartList变化，更新当前商铺的购物车信息shopCart，同时返回一个新的对象
+       */
+      shopCart () {
+        return Object.assign({}, this.cartList[this.shopId])
+      },
+      ...mapState([
+        'cartList'
+      ])
     },
     methods: {
       //移出购物车
       removeOutCart(category_id, item_id, food_id, name, price, specs){
         if (this.foodNum > 0) {
-          this.$emit('reduce', category_id, item_id, food_id, name, price, specs)
+          this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
         }
       },
       //加入购物车，计算按钮位置。
       addToCart(category_id, item_id, food_id, name, price, specs, event){
-        this.$emit('add', category_id, item_id, food_id, name, price, specs)
+        this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
         this.elLeft = event.target.getBoundingClientRect().left
         this.elBottom = event.target.getBoundingClientRect().bottom
         this.showMoveDot.push(true)
@@ -134,7 +145,7 @@
       },
       //多规格商品加入购物车
       addSpecs(category_id, item_id, food_id, name, price, specs){
-        this.$emit('add', category_id, item_id, food_id, name, price, specs)
+        this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
         this.showChooseList()
       },
       //点击多规格商品的减按钮，弹出提示
@@ -161,7 +172,10 @@
         el.children[0].addEventListener('transitionend', () => {
           this.$emit('moveInCart')
         })
-      }
+      },
+      ...mapMutations([
+        'ADD_CART', 'REDUCE_CART'
+      ])
     },
   }
 </script>

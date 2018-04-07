@@ -5,7 +5,7 @@
       <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
         <img :src="getImgPath(img)" class="header_cover_img">
         <section class="description_header">
-          <section class="description_top" @click="showActivitiesFun">
+          <router-link to="/shop/shopDetail" class="description_top">
             <section class="description_left">
               <img :src="getImgPath(img)">
             </section>
@@ -17,13 +17,16 @@
             <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" version="1.1" class="description_arrow" >
               <path d="M0 0 L8 7 L0 14"  stroke="#fff" stroke-width="1" fill="none"/>
             </svg>
-          </section>
+          </router-link>
           <footer class="description_footer"  v-if="shopDetailData.activities.length" @click="showActivitiesFun">
             <p class="ellipsis">
               <span class="tip_icon" :style="{backgroundColor: '#' + shopDetailData.activities[0].icon_color, borderColor: '#' + shopDetailData.activities[0].icon_color}">{{shopDetailData.activities[0].icon_name}}></span>
               <span>{{shopDetailData.activities[0].description}}</span>
             </p>
             <p>{{shopDetailData.activities.length}}个活动</p>
+            <svg class="footer_arrow">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-left"></use>
+            </svg>
           </footer>
           <transition name="fade">
             <section class="activities_details" v-if="showActivities">
@@ -127,10 +130,7 @@
                       <span>¥{{food.specfoods[0].price}}</span>
                       <span v-if="food.specifications.length">起</span>
                     </section>
-                    <buy-cart :foods="food" :shopCart="shopCart"
-                              @add="addToCart" @reduce="removeOutCart"
-                              @moveInCart="listenInCart"
-                    ></buy-cart>
+                    <buy-cart :foods="food" :shopId="shopId" @moveInCart="listenInCart"></buy-cart>
                   </footer>
                 </section>
               </li>
@@ -200,7 +200,7 @@
         </section>
       </transition>
       <transition name="fade-choose">
-        <section class="rating_container" v-show="changeShowType == 'rating'">
+        <section class="rating_container" v-show="changeShowType == 'rating'" v-load-more="loaderMoreRating" type="2">
           <section>
             <header class="rating_header">
               <section class="rating_header_left">
@@ -277,7 +277,7 @@
   import { imgBaseUrl } from 'common/js/config'
   import { msiteAdress } from 'api/msite'
   import { mapState, mapMutations } from 'vuex'
-  import { shopDetails, menuList, ratingScores, ratingTags, ratings } from 'api/shop'
+  import { shopDetails, menuList, ratingScores, ratingTags, ratings, tatingTagName } from 'api/shop'
   import Loading from 'base/loading/loading'
   import RatingStar from 'base/rating-star/rating-star'
   import BuyCart from 'base/buyCart/buyCart'
@@ -401,6 +401,10 @@
         this.ratingTagsIndex = index
         this.ratingOffset = 0
         this.ratingTagName = name
+
+        tatingTagName(this.shopId, name).then(res => {
+          this.ratingList = res
+        })
 
       },
       //加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
@@ -542,6 +546,24 @@
         }
         let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
         return url
+      },
+      //页面下拉至底部，加载更多
+      loaderMoreRating(){
+        if (this.preventRepeatRequest) {
+          return
+        }
+        this.loadRatings = true
+        this.preventRepeatRequest = true
+        this.ratingOffset += 10
+        let ratingDate = ''
+        tatingTagName(this.shopId, this.ratingTagName).then(res => {
+          ratingDate = res
+        })
+        this.ratingList = this.ratingList.concat(ratingDate)
+        this.loadRatings = false
+        if (ratingDate.length >= 10) {
+          this.preventRepeatRequest = false
+        }
       },
       ...mapMutations([
         'SET_LATITUDE',
@@ -813,7 +835,7 @@
       .description_footer{
         @include fj;
         margin-top: 0.5rem;
-        padding-right: .4rem;
+        padding-right: 1rem;
         p{
           @include sc(.5rem, #fff);
           span{
@@ -828,6 +850,11 @@
         }
         .ellipsis{
           width: 87%;
+        }
+        .footer_arrow{
+          @include wh(.45rem, .45rem);
+          position: absolute;
+          right: .3rem;
         }
       }
       .activities_details{
