@@ -45,6 +45,7 @@
     </p>
     <div class="login_container" @click="mobileLogin">登陆</div>
     <router-link to="/forget" class="to_forget" v-if="!loginWay">忘记密码？</router-link>
+    <alert-tip v-show="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
   </div>
 </template>
 
@@ -55,6 +56,7 @@
   import axios from 'axios'
   import qs from 'qs'
   import {base64ToBlob} from 'common/js/config'
+  import AlertTip from 'base/alertTip/alertTip'
 
   export default {
     data () {
@@ -70,12 +72,13 @@
         mobileCode: null,      //短信验证码
         validate_token: null,    //获取短信时返回的验证值，登陆时需要
         userInfo: null,          //获取到的用户信息
-        userAccount: null,
-        passWord: null,
-        captchaCodeImg: null,
+        userAccount: null,     //用户名
+        passWord: null,        //密码
+        captchaCodeImg: null,   //验证码地址
         codeNumber: null,     //验证码
         showAlert: false,   //显示提示组件
-        alertText: null     //提示的内容
+        alertText: null,     //提示的内容
+        userId: ''
       }
     },
     created () {
@@ -141,6 +144,7 @@
           sendLogin(sendData).then(res => {
             console.log(res)
           })
+
         } else {
           if (!this.userAccount) {
             this.showAlert = true
@@ -160,15 +164,14 @@
             console.log(res)
           })
         }
-        if (this.userInfo.user_id) {
-          this.showAlert = true
-          this.alertText = this.userInfo.message
-          if (!this.loginWay) this.getCaptchaCode()
-        }else{
-          this.RECORD_USERINFO(this.userInfo)
-          this.$router.go(-1)
-
-        }
+//        if (this.userInfo.user_id) {
+//          this.showAlert = true
+//          this.alertText = this.userInfo.message
+//          if (!this.loginWay) this.getCaptchaCode()
+//        }else{
+//          this.RECORD_USERINFO(this.userInfo)
+//          this.$router.go(-1)
+//        }
       },
       getCaptchaCode () {
         let captcha_str = this.phoneNumber
@@ -178,12 +181,16 @@
           this.captcha_hash = res.data.captcha_hash
         })
       },
+      closeTip () {
+        this.showAlert = false
+      },
       ...mapMutations([
         'RECORD_USERINFO',
       ])
     },
     components: {
-      EHeader
+      EHeader,
+      AlertTip
     }
   }
 </script>

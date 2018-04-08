@@ -19,12 +19,51 @@ export function captchas (captcha_str) {
 }
 
 /**
- * 登录
+ * 短信登录
+ */
+export function sendLogin (mobile, validate_code, validate_token) {
+  const url = '/restapi/eus/login/login_by_mobile'
+  const o = {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    },
+    credentials: "include"
+  }
+  const data = Object.assign({}, {
+    mobile,
+    validate_code,
+    validate_token
+  })
+  return axios.post(url, qs.stringify(data), o).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+/**
+ * 用户名登录
  */
 export function accountLogin (captcha_hash, captcha_value, username, password) {
-  return axios.post('/restapi/eus/login/login_by_password', qs.stringify(captcha_hash, captcha_value, username, password))
+  const url = '/restapi/eus/login/login_by_password'
+  const o = {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    },
+    credentials: "include"
+  }
+  const data = Object.assign({}, {
+    captcha_hash,
+    captcha_value,
+    username,
+    password
+  })
+  return axios.post(url, qs.stringify(data), o).then((res) => {
+    return Promise.resolve(res.data)
+  })
 }
 
-export function sendLogin (mobile, validate_code, validate_token) {
-  return axios.post('/restapi/eus/login/login_by_password', qs.stringify(mobile, validate_code, validate_token))
+export function getUserInfo (id) {
+  const url = '/restapi/eus/v2/users/' + id
+
+  return axios.get(url).then((res) => {
+    return Promise.resolve(res.data)
+  })
 }
