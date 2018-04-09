@@ -57,6 +57,7 @@
   import qs from 'qs'
   import {base64ToBlob} from 'common/js/config'
   import AlertTip from 'base/alertTip/alertTip'
+  import {Base64} from 'js-base64'
 
   export default {
     data () {
@@ -98,11 +99,18 @@
           this.rightPhoneNumber = false
         }
       },
+      getCaptchaCode () {
+        let captcha_str = this.phoneNumber
+        captchas(captcha_str).then(res => {
+//          this.captchaCodeImg = res.data.captcha_image
+          this.captcha_hash = res.data.captcha_hash
+          this.captchaCodeImg = res.data.captcha_image
+        })
+      },
       getVerifyCode () {
-        let value = base64ToBlob(this.captchaCodeImg)
         let data = {
           captcha_hash: this.captcha_hash,
-          captcha_value: '',
+          captcha_value: base64ToBlob(this.captchaCodeImg),
           mobile: this.phoneNumber
         }
         if (this.rightPhoneNumber) {
@@ -172,14 +180,6 @@
 //          this.RECORD_USERINFO(this.userInfo)
 //          this.$router.go(-1)
 //        }
-      },
-      getCaptchaCode () {
-        let captcha_str = this.phoneNumber
-        captchas(captcha_str).then(res => {
-        //  console.log(res.data.captcha_image)
-          this.captchaCodeImg = res.data.captcha_image
-          this.captcha_hash = res.data.captcha_hash
-        })
       },
       closeTip () {
         this.showAlert = false

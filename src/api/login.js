@@ -6,16 +6,32 @@ import qs from 'qs'
 
 // 获取短信验证码
 export function getMobileCode (captcha_hash, captcha_value, mobile) {
-  return axios.post('/restapi/eus/login/mobile_send_code', qs.stringify(captcha_hash, captcha_value, mobile))
+  const o = {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    },
+    credentials: "include"
+  }
+  return axios.post('/restapi/eus/login/mobile_send_code', qs.stringify(captcha_hash, captcha_value, mobile), {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    }
+  })
 }
 
 /**
  * 获取验证码图片
- * @param captcha_str
- * @returns {AxiosPromise<T>}
  */
 export function captchas (captcha_str) {
    return axios.post('/restapi/eus/v3/captchas', qs.stringify(captcha_str))
+   //   .then(response => {
+   //   return 'data:image/png;base64,' + btoa(
+   //       new Uint8Array(response.data)
+   //         .reduce((data, byte) => data + String.fromCharCode(byte), '')
+   //     )
+   // }).then(data => {
+   //   return Promise.resolve(data)
+   // })
 }
 
 /**
@@ -34,8 +50,10 @@ export function sendLogin (mobile, validate_code, validate_token) {
     validate_code,
     validate_token
   })
-  return axios.post(url, qs.stringify(data), o).then((res) => {
-    return Promise.resolve(res.data)
+  return axios.post(url, qs.stringify(data), {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    },
   })
 }
 /**
@@ -55,8 +73,10 @@ export function accountLogin (captcha_hash, captcha_value, username, password) {
     username,
     password
   })
-  return axios.post(url, qs.stringify(data), o).then((res) => {
-    return Promise.resolve(res.data)
+  return axios.post(url, qs.stringify(data), {
+    headers: {
+      "content-type": "application/json; charset=utf-8"
+    },
   })
 }
 
