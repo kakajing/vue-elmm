@@ -19,7 +19,9 @@
     "babel-runtime": "^6.26.0",
     "swiper": "^4.1.0",
     "fastclick": "^1.0.6",
-    "qs": "^6.5.1"
+    "qs": "^6.5.1",
+    "js-base64": "^2.4.3",
+    "better-scroll": "^1.9.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -1,7 +1,7 @@
 <template>
   <div class="shop_container">
-    <!--店铺明细-->
     <section class="shop_container">
+      <!--店铺明细-->
       <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
         <img :src="getImgPath(img)" class="header_cover_img">
         <section class="description_header">
@@ -57,6 +57,7 @@
           </transition>
         </section>
       </header>
+      <!--导航-->
       <section class="change_show_type" ref="chooseType">
         <div>
           <span :class='{activity_show: changeShowType =="food"}' @click="changeShowType='food'">商品</span>
@@ -69,72 +70,78 @@
         <section v-show="changeShowType == 'food'" class="food_container">
           <!--食品分类-->
           <section class="menu_container">
-            <ul class="menu_left">
-              <li class="menu_left_li" v-for="(item, index) in menuList" :key="index"
-                  :class="{activity_menu: index == menuIndex}"
-                  @click="chooseMenu(index)"
-              >
-                <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
-                <span>{{item.name}}</span>
-                <!--v-if="categoryNum[index]&&item.type==1"-->
-                <span class="category_num" v-if="categoryNum[index]">{{categoryNum[index]}}</span>
-              </li>
-            </ul>
+            <section class="menu_left" id="wrapper_menu" ref="wrapperMenu">
+              <ul>
+                <li v-for="(item,index) in menuList" :key="index"
+                    class="menu_left_li"
+                    :class="{activity_menu: index == menuIndex}"
+                    @click="chooseMenu(index)"
+                >
+                  <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
+                  <span>{{item.name}}</span>
+                  <!--v-if="categoryNum[index]&&item.type==1"-->
+                  <span class="category_num" v-if="categoryNum[index]">{{categoryNum[index]}}</span>
+                </li>
+              </ul>
+            </section>
             <!--食品列表-->
-            <ul class="menu_right" ref="menuFoodList">
-              <li v-for="(item, index) in menuList" :key="index">
-                <header class="menu_detail_header">
-                  <section class="menu_detail_header_left">
-                    <strong class="menu_item_title">{{item.name}}</strong>
-                    <span class="menu_item_description">{{item.description}}</span>
-                  </section>
-                  <span class="menu_detail_header_right" @click="showTitleDetail(index)"></span>
-                  <p class="description_tip" v-show="index == titleDetailIndex">
-                    <span>{{item.name}}</span>
-                    {{item.description}}
-                  </p>
-                </header>
-                <section v-for="(food, foodIndex) in item.foods" :key="foodIndex" class="menu_detail_list">
-                  <router-link :to="{path: 'shop/foodDetail',
+            <section class="menu_right" ref="menuFoodList">
+              <ul>
+                <li v-for="(item, index) in menuList" :key="index">
+                  <header class="menu_detail_header">
+                    <section class="menu_detail_header_left">
+                      <strong class="menu_item_title">{{item.name}}</strong>
+                      <span class="menu_item_description">{{item.description}}</span>
+                    </section>
+                    <span class="menu_detail_header_right" @click="showTitleDetail(index)"></span>
+                    <p class="description_tip" v-show="index == titleDetailIndex">
+                      <span>{{item.name}}</span>
+                      {{item.description}}
+                    </p>
+                  </header>
+                  <section v-for="(food, foodIndex) in item.foods" :key="foodIndex" class="menu_detail_list">
+                    <router-link :to="{path: 'shop/foodDetail',
             query: {image_path: food.image_path, description: food.description, month_sales: food.month_sales, name: food.name, rating: food.rating, rating_count: food.rating_count, satisfy_rate: food.satisfy_rate, food, shopId}}"
-                               tag="div"
-                               class="menu_detail_link"
-                  >
-                    <section class="menu_food_img">
-                      <img :src="getImgPath(food.image_path)">
-                    </section>
-                    <section class="menu_food_description" >
-                      <h3 class="food_description_head">
-                        <strong class="description_foodName">{{food.name}}</strong>
-                        <ul v-if="food.attributes.length" class="attributes_ul">
-                          <li v-for="(attribute, foodIndex) in food.attributes" :key="foodIndex"
-                              :style="{color: '#' + attribute.icon_color,borderColor:'#' +attribute.icon_color}"
-                              :class="{attribute_new: attribute.icon_name == '新'}"
-                          >
-                            <p :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}">{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
-                          </li>
-                        </ul>
-                      </h3>
-                      <p class="food_description_content">{{food.description}}</p>
-                      <p class="food_description_sale_rating">
-                        <span>月售{{food.month_sales}}份</span>
-                        <span>好评率{{food.satisfy_rate}}%</span>
-                      </p>
-                      <p v-if="food.activity" class="food_activity">
-                        <span :style="{color: '#' + food.activity.applicable_quantity_text_color, borderColor: '#' + food.activity.applicable_quantity_text_color}">{{food.activity.applicable_quantity_text}}</span>
-                      </p>
-                    </section>
-                  </router-link>
-                  <footer class="menu_detail_footer" >
-                    <section class="food_price">
-                      <span>¥{{food.specfoods[0].price}}</span>
-                      <span v-if="food.specifications.length">起</span>
-                    </section>
-                    <buy-cart :foods="food" :shopId="shopId" @moveInCart="listenInCart"></buy-cart>
-                  </footer>
-                </section>
-              </li>
-            </ul>
+                                 tag="div"
+                                 class="menu_detail_link"
+                    >
+                      <section class="menu_food_img">
+                        <img :src="getImgPath(food.image_path)">
+                      </section>
+                      <section class="menu_food_description" >
+                        <h3 class="food_description_head">
+                          <strong class="description_foodName">{{food.name}}</strong>
+                          <ul v-if="food.attributes.length" class="attributes_ul">
+                            <li v-for="(attribute, foodIndex) in food.attributes" :key="foodIndex"
+                                :style="{color: '#' + attribute.icon_color,borderColor:'#' +attribute.icon_color}"
+                                :class="{attribute_new: attribute.icon_name == '新'}"
+                            >
+                              <p :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}">{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
+                            </li>
+                          </ul>
+                        </h3>
+                        <p class="food_description_content">{{food.description}}</p>
+                        <p class="food_description_sale_rating">
+                          <span>月售{{food.month_sales}}份</span>
+                          <span>好评率{{food.satisfy_rate}}%</span>
+                        </p>
+                        <p v-if="food.activity" class="food_activity">
+                          <span :style="{color: '#' + food.activity.applicable_quantity_text_color, borderColor: '#' + food.activity.applicable_quantity_text_color}">{{food.activity.applicable_quantity_text}}</span>
+                        </p>
+                      </section>
+                    </router-link>
+                    <footer class="menu_detail_footer" >
+                      <section class="food_price">
+                        <span>¥{{food.specfoods[0].price}}</span>
+                        <span v-if="food.specifications.length">起</span>
+                      </section>
+                      <buy-cart :foods="food" :shopId="shopId" @moveInCart="listenInCart"></buy-cart>
+                    </footer>
+                  </section>
+                </li>
+              </ul>
+            </section>
+
           </section>
           <!--底部购物车结算-->
           <section class="buy_cart_container">
@@ -283,6 +290,7 @@
   import BuyCart from 'base/buyCart/buyCart'
   import {animate} from 'common/js/mUtils'
   import {getImgPath, loadMore} from 'common/js/mixin'
+  import BScroll from 'better-scroll'
 
   export default {
     mixins: [getImgPath, loadMore],
@@ -313,6 +321,8 @@
         preventRepeatRequest: false,   // 防止多次触发数据请求
         ratingTagName: '',        //评论的类型
         loadRatings: false,       //加载更多评论是显示加载组件
+        foodScroll: null,         //食品列表scroll
+        windowHeight: null,
         extras: ['activities', 'albums', 'license', 'identification', 'qualification'],
         img: ''
       }
@@ -343,6 +353,7 @@
       this.getRatingScores()
       this.getRatingTags()
       this.getRatingList()
+      this.windowHeight = window.innerHeight
     },
     computed: {
       // 监听cartList变化，更新当前商铺的购物车信息shopCart，同时返回一个新的对象，因为组件buyCart需要监听shopCart的变化
@@ -463,57 +474,48 @@
       },
       // 获取食品列表的高度，存入shopListTop
       getFoodListHeight () {
-        const baseHeight = this.$refs.shopHeader.clientHeight
         const listContainer = this.$refs.menuFoodList
-        const listArr = Array.from(listContainer.children)
+        const listArr = Array.from(listContainer.children[0].children)
         listArr.forEach((item, index) => {
-          this.shopListTop[index] = item.offsetTop - baseHeight
+          this.shopListTop[index] = item.offsetTop
         })
         this.listenScroll(listContainer)
       },
       // 当滑动食品列表时，监听其scrollTop值来设置对应的食品列表标题的样式
       listenScroll (element) {
-        let oldScrollTop
-        let requestFram
-        element.addEventListener('scroll', () => {
-          currentIndex()
-        }, false)
-        // 运动过程中保持坚挺 scrollTop 的值
-        element.addEventListener('touchmove', () => {
-          currentIndex()
-        })
-        // 运动结束时判断是否有惯性运动
-        element.addEventListener('touchend', () => {
-          oldScrollTop = element.scrollTop
-          bounceMove()
+        this.foodScroll = new BScroll(element, {
+          probeType: 3,
+          deceleration: 0.001,
+          bounce: false,
+          swipeTime: 2000,
+          click: true
         })
 
-        const bounceMove = () => {
-          requestFram = requestAnimationFrame(() => {
-            if (element.scrollTop !== oldScrollTop) {
-              oldScrollTop = element.scrollTop
-              currentIndex()
-              bounceMove()
-            } else {
-              cancelAnimationFrame(requestFram)
-              currentIndex()
-            }
-          })
-        }
+        const wrapperMenu = new BScroll('#wrapper_menu', {
+          click: true
+        })
 
-        const currentIndex = () => {
+        const wrapMenuHeight = this.$refs.wrapperMenu.clientHeight
+        this.foodScroll.on('scroll', (pos) => {
+          if (!this.$refs.wrapperMenu) {
+            return
+          }
           this.shopListTop.forEach((item, index) => {
-            if (this.menuIndexChange && element.scrollTop >= item && element.scrollTop < this.shopListTop[index + 1]) {
+            if (this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item) {
               this.menuIndex = index
+              const menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu')
+              const el = menuList[0]
+              wrapperMenu.scrollToElement(el, 800, 0, -(wrapMenuHeight/2 - 50))
             }
           })
-        }
+        })
       },
       //点击左侧食品列表标题，相应列表移动到最顶层
       chooseMenu (index) {
         this.menuIndex = index
         this.menuIndexChange = false
-        animate(this.$refs.menuFoodList, {scrollTop: this.shopListTop[index]}, () => {
+        this.foodScroll.scrollTo(0, -this.shopListTop[index], 400)
+        this.foodScroll.on('scrollEnd', () => {
           this.menuIndexChange = true
         })
       },
@@ -591,7 +593,7 @@
       },
       //监听购物车中商铺列表的变化，当length为0时将列表隐藏
       cartFoodList (value) {
-        if (value.length === 0) {
+        if (!value.length) {
           this.showCartList = false
         }
       }

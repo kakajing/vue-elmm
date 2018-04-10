@@ -163,14 +163,13 @@ export const animate = (element, target, duration = 400, mode = 'ease-out', call
 
   // 获取目标属性单位和初始样式值
   Object.keys(target).forEach(attr => {
-    var reg = /[^\d^\.]+/gi
-    if (reg.test(target[attr])) {
-      unit[attr] = target[attr].match(reg)[0] || 'px'
-    } else {
-      unit[attr] = 'px'
+    if (/[^\d^\.]+/gi.test(target[attr])) {
+      unit[attr] = target[attr].match(/[^\d^\.]+/gi)[0] || 'px';
+    }else{
+      unit[attr] = 'px';
     }
-    initState[attr] = attrStyle(attr)
-  })
+    initState[attr] = attrStyle(attr);
+  });
 
   // 去掉传入的后缀单位
   Object.keys(target).forEach(attr => {
