@@ -68,14 +68,15 @@
       </section>
       <transition name="fade-choose">
         <section v-show="changeShowType == 'food'" class="food_container">
-          <!--食品分类-->
           <section class="menu_container">
+            <!--菜单分类-->
             <section class="menu_left" id="wrapper_menu" ref="wrapperMenu">
               <ul>
                 <li v-for="(item,index) in menuList" :key="index"
                     class="menu_left_li"
-                    :class="{activity_menu: index == menuIndex}"
-                    @click="chooseMenu(index)"
+                    :class="{'current_menu': currentIndex===index}"
+                    @click="selectMenu(index, $event)"
+                    ref="menuList"
                 >
                   <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
                   <span>{{item.name}}</span>
@@ -85,9 +86,9 @@
               </ul>
             </section>
             <!--食品列表-->
-            <section class="menu_right" ref="menuFoodList">
+            <section class="menu_right" ref="wrapperFood">
               <ul>
-                <li v-for="(item, index) in menuList" :key="index">
+                <li v-for="(item, index) in menuList" :key="index" ref="menuFoodList">
                   <header class="menu_detail_header">
                     <section class="menu_detail_header_left">
                       <strong class="menu_item_title">{{item.name}}</strong>
@@ -141,7 +142,6 @@
                 </li>
               </ul>
             </section>
-
           </section>
           <!--底部购物车结算-->
           <section class="buy_cart_container">
@@ -321,10 +321,11 @@
         preventRepeatRequest: false,   // 防止多次触发数据请求
         ratingTagName: '',        //评论的类型
         loadRatings: false,       //加载更多评论是显示加载组件
-        foodScroll: null,         //食品列表scroll
         windowHeight: null,
         extras: ['activities', 'albums', 'license', 'identification', 'qualification'],
-        img: ''
+        img: '',
+        scrollY: 0,
+        listHeight: []
       }
     },
     created () {
@@ -348,17 +349,20 @@
         // 获取商铺食品列表
         menuList(this.shopId).then(res => {
           this.menuList = res
+          this.$nextTick(() => {
+            this._initScroll()
+            this._calculateHeight()
+          })
         })
       })
       this.getRatingScores()
       this.getRatingTags()
       this.getRatingList()
-      this.windowHeight = window.innerHeight
     },
     computed: {
       // 监听cartList变化，更新当前商铺的购物车信息shopCart，同时返回一个新的对象，因为组件buyCart需要监听shopCart的变化
       shopCart () {
-        return Object.assign({}, this.cartList[this.shopId])
+        return {...this.cartList[this.shopId]}
       },
       //商铺公告
       promotionInfo () {
@@ -379,6 +383,17 @@
         } else {
           return null
         }
+      },
+      currentIndex() {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            this._followScroll(i)
+            return i
+          }
+        }
+        return 0
       },
       totalNum () {
         let num = 0
@@ -421,7 +436,7 @@
       //加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
       addToCart (category_id, item_id, food_id, name, price, specs) {
         this.ADD_CART({shopId:this.shopId, category_id, item_id, food_id, name, price, specs})
-  },
+      },
       //移出购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
       removeOutCart (category_id, item_id, food_id, name, price, specs) {
         this.REDUCE_CART({shopId:this.shopId, category_id, item_id, food_id, name, price, specs})
@@ -472,52 +487,45 @@
       toggleCartList () {
         this.showCartList = !this.showCartList
       },
-      // 获取食品列表的高度，存入shopListTop
-      getFoodListHeight () {
-        const listContainer = this.$refs.menuFoodList
-        const listArr = Array.from(listContainer.children[0].children)
-        listArr.forEach((item, index) => {
-          this.shopListTop[index] = item.offsetTop
-        })
-        this.listenScroll(listContainer)
-      },
-      // 当滑动食品列表时，监听其scrollTop值来设置对应的食品列表标题的样式
-      listenScroll (element) {
-        this.foodScroll = new BScroll(element, {
-          probeType: 3,
-          deceleration: 0.001,
-          bounce: false,
-          swipeTime: 2000,
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$refs.wrapperMenu, {
           click: true
         })
-
-        const wrapperMenu = new BScroll('#wrapper_menu', {
-          click: true
+        this.foodsScroll = new BScroll(this.$refs.wrapperFood, {
+          click: true,
+          probeType: 3
         })
-
-        const wrapMenuHeight = this.$refs.wrapperMenu.clientHeight
-        this.foodScroll.on('scroll', (pos) => {
-          if (!this.$refs.wrapperMenu) {
-            return
+        this.foodsScroll.on('scroll', (pos) => {
+          // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
+          if (pos.y <= 0) {
+            this.scrollY = Math.abs(Math.round(pos.y))
           }
-          this.shopListTop.forEach((item, index) => {
-            if (this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item) {
-              this.menuIndex = index
-              const menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu')
-              const el = menuList[0]
-              wrapperMenu.scrollToElement(el, 800, 0, -(wrapMenuHeight/2 - 50))
-            }
-          })
         })
+      },
+      //计算右侧列表的每一个大区块的高度,并累加,存入数组listHeight
+      _calculateHeight() {
+        let menuFoodList = this.$refs.menuFoodList
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < menuFoodList.length; i++) {
+          let item = menuFoodList[i]
+          height += item.clientHeight
+          this.listHeight.push(height)
+        }
       },
       //点击左侧食品列表标题，相应列表移动到最顶层
-      chooseMenu (index) {
-        this.menuIndex = index
-        this.menuIndexChange = false
-        this.foodScroll.scrollTo(0, -this.shopListTop[index], 400)
-        this.foodScroll.on('scrollEnd', () => {
-          this.menuIndexChange = true
-        })
+      selectMenu(index, event) {
+        if (!event._constructed) {
+          return
+        }
+        let menuFoodList = this.$refs.menuFoodList
+        let el = menuFoodList[index]
+        this.foodsScroll.scrollToElement(el, 300)
+      },
+      _followScroll(index) {
+        let menuList = this.$refs.menuList
+        let el = menuList[index]
+        this.menuScroll.scrollToElement(el, 300, 0, -100)
       },
       //控制显示列表标题详情提示
       showTitleDetail (index) {
@@ -962,7 +970,7 @@
           font-family: Helvetica Neue,Tahoma,Arial;
         }
       }
-      .activity_menu{
+      .current_menu{
         border-left: 0.15rem solid #3190e8;
         background-color: #fff;
         span:nth-of-type(1){
