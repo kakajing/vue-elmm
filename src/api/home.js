@@ -5,14 +5,14 @@
 import axios from 'axios'
 
 export function getCities () {
-  const url = '/api/getCities'
+  const url = '/restapi/shopping/v1/cities'
   return axios.get(url).then((res) => {
     return Promise.resolve(res.data)
   })
 }
 
 export function getGuess () {
-  const url = '/api/getGuess'
+  const url = '/restapi/shopping/v1/cities/guess'
   return axios.get(url).then((res) => {
     return Promise.resolve(res.data)
   })

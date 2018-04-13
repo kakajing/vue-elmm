@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import App from '../App'
-// import Checkout from 'components/checkout/checkout'
 import City from 'components/city/city'
 import Forget from 'components/forget/forget'
 import Home from 'components/home/home'

@@ -1,30 +1,10 @@
 import axios from 'axios'
 
-export function getCurrentCity () {
-  const url = '/api/getGuess'
-  return axios.get(url).then((res) => {
-    return Promise.resolve(res.data)
-  })
-}
-
-export function search (keyword, latitude, longitude) {
-  const url = '/api/search'
-  const data = Object.assign({}, {
-    keyword: keyword,
-    offset: 0,
-    limit: 20,
-    latitude: latitude,
-    longitude: longitude
-  })
-  return axios.get(url, {
-    params: data
-  }).then((res) => {
-    return Promise.resolve(res.data)
-  })
-}
-
+/**
+ * 搜索数据
+ */
 export function query (keyword, geohash) {
-  const url = '/api/query'
+  const url = '/restapi/v2/pois'
   const data = Object.assign({}, {
     keyword: keyword,
     geohash: geohash,

@@ -5,7 +5,7 @@ import axios from 'axios'
 
 // 获取category 种类列表
 export function getFoodCategory (latitude, longitude) {
-  const url = '/api/foodCategory'
+  const url = '/restapi/shopping/v2/restaurant/category'
 
   const data = Object.assign({}, {
     latitude,
@@ -21,13 +21,14 @@ export function getFoodCategory (latitude, longitude) {
 
 // 获取商铺列表
 export function getFoodRestaurants (latitude, longitude, extras, restaurantCategoryIds) {
-  const url = '/api/restaurants'
+  const url = '/restapi/shopping/v3/restaurants'
 
   const data = Object.assign({}, {
     latitude,
     longitude,
     keyword: '',
     offset: 0,
+    limit: 8,
     extras,
     terminal: 'h5',
     brand_ids: '',
@@ -43,7 +44,7 @@ export function getFoodRestaurants (latitude, longitude, extras, restaurantCateg
 
 // 获取配送方式和商家属性活动列表
 export function getFoodDelivery (latitude, longitude) {
-  const url = '/api/foodDelivery'
+  const url = '/restapi/shopping/v1/restaurants/filter-bar/attributes'
 
   const data = Object.assign({}, {
     latitude,
@@ -85,7 +86,7 @@ export function getFoodFilter (latitude, longitude, extras, supportIds, delivery
 
 //
 export function getFoodSort (latitude, longitude, extras, sortByType, restaurantCategoryId) {
-  const url = '/api/foodSort'
+  const url = '/restapi/shopping/v3/restaurants'
 
   const data = Object.assign({}, {
     latitude,

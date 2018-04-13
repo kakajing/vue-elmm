@@ -3,19 +3,25 @@
  */
 import axios from 'axios'
 
-export function msiteAdress () {
-  const url = '/api/msiteAdress'
+/**
+ * 获取msite页面地址信息
+ */
+export function msiteAdress (geohash) {
+  const url = '/restapi/v1/pois/' + geohash
   return axios.get(url).then((res) => {
     return Promise.resolve(res.data)
   })
 }
 
-export function msiteFoodTypes (latitude, longitude) {
-  const url = '/api/msiteFoodTypes'
+/**
+ * 获取导航食品类型列表
+ */
+export function msiteFoodTypes (latitude, longitude, templates) {
+  const url = '/restapi/shopping/openapi/entries'
   const data = Object.assign({}, {
     latitude: latitude,
     longitude: longitude,
-    'templates[]': 'main_template'
+    templates: templates
   })
   return axios.get(url, {
     params: data
@@ -24,8 +30,11 @@ export function msiteFoodTypes (latitude, longitude) {
   })
 }
 
+/**
+ * 商铺列表
+ */
 export function shopList (latitude, longitude, extras) {
-  const url = '/api/shopList'
+  const url = '/restapi/shopping/v3/restaurants'
   const data = {
     latitude: latitude,
     longitude: longitude,

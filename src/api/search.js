@@ -4,7 +4,7 @@
 import axios from 'axios'
 
 export function searchRestaurant (searchValue, latitude, longitude, extras) {
-  const url = '/api/searchRestaurant'
+  const url = '/restapi/shopping/v2/restaurants/search'
 
   const data = Object.assign({}, {
     offset: 0,

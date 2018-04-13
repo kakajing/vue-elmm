@@ -23,9 +23,11 @@ export function shopDetails (shopId, extras, latitude, longitude) {
   })
 }
 
+/**
+ *  获取shop页面菜单列表
+ */
 export function menuList (id) {
-  const url = '/api/menuList'
-  // const url = `/api/shopDetails/${id}`
+  const url = '/restapi/shopping/v2/menu'
 
   const data = Object.assign({}, {
     restaurant_id: id

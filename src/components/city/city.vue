@@ -25,8 +25,10 @@
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
-  import { getCurrentCity, query } from 'api/city'
+  import { query } from 'api/city'
+  import {getGuess} from 'api/home'
   import { getStore, setStore } from 'common/js/mUtils'
+  import {mapMutations} from 'vuex'
 
   export default{
     data () {
@@ -40,20 +42,32 @@
         placeHistory: [],   // 历史搜索记录
         historyTitle: true,  // 默认显示搜索历史头部，点击搜索后隐藏
         placeNone: false,     // 搜索无结果，显示提示信息
-        query: ''             // 搜索地址
+        query: '',             // 搜索地址
+        latitude: '',
+        longitude: ''
       }
     },
     mounted () {
       this.getCurrentCity()
-      if (getStore('placeHistory')) {
-        this.placeList = JSON.parse(getStore('placeHistory'))
-      }
+      this.initData()
     },
     methods: {
+      initData () {
+        if (getStore('placeHistory')) {
+          this.placeList = JSON.parse(getStore('placeHistory'))
+        } else {
+          this.placeList = []
+        }
+      },
       getCurrentCity () {
-        getCurrentCity().then((res) => {
+        getGuess().then((res) => {
           this.cityName = res.name
           this.cityId = res.city_id
+          this.latitude = res.latitude
+          this.longitude = res.longitude
+          this.SET_LATITUDE(this.latitude)
+          this.SET_LONGITUDE(this.longitude)
+          //  console.log(res)
         })
       },
       postPois () {
@@ -92,6 +106,9 @@
         setStore('placeHistory', this.placeHistory)
         this.$router.push({path: '/msite', query: {geohash}})
       },
+      ...mapMutations([
+        'SET_LATITUDE', 'SET_LONGITUDE'
+      ])
     },
     components: {
       EHeader

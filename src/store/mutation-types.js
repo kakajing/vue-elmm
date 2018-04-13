@@ -2,6 +2,8 @@ export const SET_LATITUDE = 'SET_LATITUDE'
 
 export const SET_LONGITUDE = 'SET_LONGITUDE'
 
+export const SET_GEOHASH = 'SET_GEOHASH'
+
 export const SET_CART_LIST = 'SET_CART_LIST'
 
 export const ADD_CART = 'ADD_CART'

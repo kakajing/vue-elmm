@@ -10,6 +10,9 @@ const mutations = {
   [types.SET_LONGITUDE] (state, longitude) {
     state.longitude = longitude
   },
+  [types.SET_GEOHASH] (state, geohash) {
+    state.geohash = geohash
+  },
   [types.SET_CART_LIST] (state, list) {
     state.cartList = list
   },
