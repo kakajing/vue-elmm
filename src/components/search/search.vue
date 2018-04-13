@@ -12,7 +12,7 @@
         <router-link :to="{path: '/shop', query: {id:item.id}}" tag="li" v-for="item in restaurantFood" :key="item.id"
                      class="list_li">
           <section class="item_left">
-            <img :src="imgBaseUrl + subImgUrl(item.image_path)" class="restaurant_img">
+            <img :src="getImgPath(item.image_path)" class="restaurant_img">
           </section>
           <section class="item_right">
             <div class="item_right_text">
@@ -60,36 +60,41 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import { getStore, setStore } from 'common/js/mUtils'
-  import {imgBaseUrl} from 'common/js/config'
   import {getGuess} from 'api/home'
   import { searchRestaurant } from 'api/search'
   import ShopList from 'base/shop-list/shop-list'
+  import { mapState } from 'vuex'
+  import {getImgPath} from 'common/js/mixin'
 
   export default{
+    mixins: [getImgPath],
     data () {
       return {
         headTitle: '搜索',
         goBack: true,
         placeholder: '请输入商家或美食名称',
-        geohash: '',
         searchValue: '',
         restaurant: [],      // 搜索返回结果中的餐厅
         restaurantList: [],  // 搜索返回的结果
         restaurantFood: [],  // 搜索返回结果中的food
         searchHistory: [],    // 搜索历史记录
-        imgBaseUrl: imgBaseUrl,
         showHistory: true,    // 是否显示历史记录，只有在返回搜索结果后隐藏
-        latitude: '',
-        longitude: '',
-        extras: '',
+        extras: ['activities', 'coupon'],
         emptyResult: false  // 搜索结果为空时显示
       }
     },
     mounted () {
-    //  this.geohash = this.$route.params.geohash
-//      if (getStore('searchHistory')) {
-//        this.searchHistory = JSON.parse('searchHistory')
-//      }
+      if (getStore('searchHistory')) {
+        this.searchHistory = JSON.parse('searchHistory')
+      }
+    },
+    created () {
+
+    },
+    computed: {
+      ...mapState([
+        'latitude', 'longitude'
+      ])
     },
     methods: {
       checkInput () {
@@ -101,7 +106,6 @@
       },
       // 点击提交按钮，搜索结果显示，同时将搜索内容存入历史记录
       searchTarget (historyValue) {
-        this.extras = ['activities', 'coupon']
         if (historyValue) {
           this.searchHistory = historyValue
         } else if (!this.searchValue) {
@@ -109,20 +113,16 @@
         }
         // 隐藏历史记录
         this.showHistory = false
-        getGuess().then((res) => {
-          this.latitude = res.latitude
-          this.longitude = res.longitude
-          // 获取搜索结果
-          searchRestaurant(this.searchValue, this.latitude, this.longitude, this.extras).then((res) => {
-            this.restaurantList = res.inside[3].restaurant_with_foods
-            this.restaurantList.forEach(item => {
-              this.restaurant = item.restaurant
-              this.restaurantFood = item.foods
-            //  console.log(this.restaurantList)
-            })
+        // 获取搜索结果
+        searchRestaurant(this.searchValue, this.latitude, this.longitude, this.extras).then((res) => {
+          this.restaurantList = res.inside[3].restaurant_with_foods
+          this.restaurantList.forEach(item => {
+            this.restaurant = item.restaurant
+            this.restaurantFood = item.foods
           })
-          this.emptyResult = !this.restaurantList.length
         })
+        this.emptyResult = !this.restaurantList.length
+
         /**
          * 点击搜索结果进入下一页面时进行判断是否已经有一样的历史记录
          * 如果没有则新增，如果有则不做重复储存，判断完成后进入下一页
@@ -153,18 +153,6 @@
       clearAllHistory () {
         this.searchHistory = []
         setStore('searchHistory', this.searchHistory)
-      },
-      // 传递过来的图片地址需要处理后才能正常使用
-      subImgUrl (path) {
-        let suffix
-        //  console.log(path)
-        if (path.indexOf('jpeg') !== -1) {
-          suffix = '.jpeg'
-        } else {
-          suffix = '.png'
-        }
-        let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
-        return url
       }
     },
     components: {

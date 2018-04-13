@@ -16,15 +16,19 @@ vue2 + vuex + vue-router + axios + webpack + ES6 + sass + flex + svg
 
 在写项目的同时也会相继有记录项目开发过程的相关文章：
 
-[饿了么商城开发（一）框架搭建](https://kakajing.github.io/2018/01/18/%E5%90%83%E4%BA%86%E5%90%97%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA/)
+[饿了么45个页面重构（一）框架搭建](https://kakajing.github.io/2018/01/18/%E5%90%83%E4%BA%86%E5%90%97%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA/)
 
-[饿了么商城开发（二）：axios的应用及首页和city页面相关](https://kakajing.github.io/2018/01/20/%E5%90%83%E4%BA%86%E5%90%97%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9Aaxios%E7%9A%84%E5%BA%94%E7%94%A8%E5%8F%8A%E9%A6%96%E9%A1%B5%E5%92%8Ccity%E9%A1%B5%E9%9D%A2%E7%9B%B8%E5%85%B3/)
+[饿了么45个页面重构（二）：axios的应用及首页和city页面相关](https://kakajing.github.io/2018/01/20/%E5%90%83%E4%BA%86%E5%90%97%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9Aaxios%E7%9A%84%E5%BA%94%E7%94%A8%E5%8F%8A%E9%A6%96%E9%A1%B5%E5%92%8Ccity%E9%A1%B5%E9%9D%A2%E7%9B%B8%E5%85%B3/)
 
-[饿了么商城开发（三）msite页面相关](https://kakajing.github.io/2018/02/01/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89msite%E9%A1%B5%E9%9D%A2%E7%9B%B8%E5%85%B3/)
+[饿了么45个页面重构（三）轮播图及msite页面开发](https://kakajing.github.io/2018/02/01/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89msite%E9%A1%B5%E9%9D%A2%E7%9B%B8%E5%85%B3/)
 
-[饿了么商城开发（四）：vuex的使用和food页面开发](https://kakajing.github.io/2018/02/04/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9Avuex%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8Cfood%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91%E4%B8%80/)
+[饿了么45个页面重构（四）：vuex的使用和food页面开发一](https://kakajing.github.io/2018/02/04/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9Avuex%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8Cfood%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91%E4%B8%80/)
 
-[饿了么商城开发（五）food页面开发二](https://kakajing.github.io/2018/02/05/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%BA%94%EF%BC%89food%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91%E4%BA%8C/)
+[饿了么45个页面重构（五）transition动画使用及food页面开发二](https://kakajing.github.io/2018/02/05/%E9%A5%BF%E4%BA%86%E4%B9%88%E5%95%86%E5%9F%8E%E5%BC%80%E5%8F%91%EF%BC%88%E4%BA%94%EF%BC%89food%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91%E4%BA%8C/)
+
+[饿了么45个页面重构（六）：搜索页面开发](https://kakajing.github.io/2018/02/12/%E9%A5%BF%E4%BA%86%E4%B9%8845%E4%B8%AA%E9%A1%B5%E9%9D%A2%E9%87%8D%E6%9E%84%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%90%9C%E7%B4%A2%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91/)
+
+[饿了么45个页面重构（七）：v-if与v-show的区别及shop组件开发](https://kakajing.github.io/2018/03/22/%E9%A5%BF%E4%BA%86%E4%B9%8845%E4%B8%AA%E9%A1%B5%E9%9D%A2%E9%87%8D%E6%9E%84%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9Av-if%E4%B8%8Ev-show%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8Ashop%E7%BB%84%E4%BB%B6%E5%BC%80%E5%8F%91/)
 
 
 

@@ -20,7 +20,7 @@
                          v-for="foodItem in item" :key="foodItem.id"
                          class="link_to_food">
               <figure>
-                <img :src="imgBaseUrl + subImgUrl(foodItem.image_hash)"/>
+                <img :src="getImgPath(foodItem.image_hash)"/>
                 <figcaption>{{foodItem.name}}</figcaption>
               </figure>
             </router-link>
@@ -48,8 +48,10 @@
   import Swiper from 'swiper'
   import ShopList from 'base/shop-list/shop-list'
   import { mapMutations } from 'vuex'
+  import {getImgPath} from 'common/js/mixin'
 
   export default{
+    mixins: [getImgPath],
     data () {
       return {
         geohash: '',   // city页面传递过来的地址geohash
@@ -57,59 +59,43 @@
         foodTypes: [],   // 食品分类列表
         hasGetData: false,   // 是否已经获取地理位置数据，成功之后再获取商铺列表信息
         imgBaseUrl: imgBaseUrl,   // 图片域名地址
+        extras: ['activities', 'tags'],
+        shopListArr: [],
+        templates: ['main_template', 'favourable_template', 'svip_template'],
         latitude: '',
-        longitude: '',
-        extras: [],
-        shopListArr: []
+        longitude: ''
       }
     },
     mounted () {
-      this.getMsiteAdress()
-      this.extras = ['activities', 'tags']
-      msiteAdress().then(res => {
-        this.msiteTitle = res.name
-        this.geohash = res.geohash
-        shopList(res.latitude, res.longitude, res.extras).then(resq => {
-          this.shopListArr = Array.from(Object.keys(resq.items).map(key => resq.items[key].restaurant))
-        //  console.log('vvvvv' + this.shopListArr)
-        })
-//        this.setLatitude(res.latitude)
-//        this.setLongitude(res.longitude)
-      })
-      this.getMsiteFoodTypes()
+      this.geohash = this.$route.query.geohash
+      this.SET_GEOHASH(this.geohash)
+      this.initData()
     },
     methods: {
-      getMsiteAdress () {
-        var self = this
-        msiteAdress().then((res) => {
-          self.msiteTitle = res.name
-          self.latitude = res.latitude
-          self.longitude = res.longitude
-          self.geohash = res.geohash
-        })
-      },
-      getMsiteFoodTypes () {
-        msiteFoodTypes(this.latitude, this.longitude).then((res) => {
-         // console.log(this.latitude)
-          let resLength = res[0].entries.length
-          let resArr = res[0].entries.concat([])
-          let foodArr = []
-          for (let i = 0, j = 0; i < resLength; i += 8, j++) {
-            foodArr[j] = resArr.splice(0, 8)
-          }
-          this.foodTypes = foodArr
-        //  let foods = this.foodTypes[0]
-         // console.log(typeof foods[0].link)
-        }).then(() => {
-          this.initSwiper()
-        })
-      },
-      getShopList () {
-        this.extras = ['activities', 'tags']
-        msiteAdress().then(res => {
+      initData () {
+        msiteAdress(this.geohash).then(res => {
           this.msiteTitle = res.name
-          shopList(res.latitude, res.longitude, res.extras).then(resq => {
+          this.latitude = res.latitude
+          this.longitude = res.longitude
+          this.SET_LATITUDE(this.latitude)
+          this.SET_LONGITUDE(this.longitude)
+
+          shopList(this.latitude, this.longitude, this.extras).then(resq => {
             this.shopListArr = Array.from(Object.keys(resq.items).map(key => resq.items[key].restaurant))
+          })
+
+          msiteFoodTypes(this.latitude, this.longitude, this.templates).then((resq2) => {
+            let resLength = resq2[0].entries.length
+            let resArr = resq2[0].entries.concat([])
+            let foodArr = []
+            for (let i = 0, j = 0; i < resLength; i += 8, j++) {
+              foodArr[j] = resArr.splice(0, 8)
+            }
+            this.foodTypes = foodArr
+            //  let foods = this.foodTypes[0]
+            // console.log(typeof foods[0].link)
+          }).then(() => {
+            this.initSwiper()
           })
         })
       },
@@ -122,21 +108,8 @@
           loop: true
         })
       },
-      // 传递过来的图片地址需要处理后才能正常使用
-      subImgUrl (path) {
-        let suffix
-        //  console.log(path)
-        if (path.indexOf('jpeg') !== -1) {
-          suffix = '.jpeg'
-        } else {
-          suffix = '.png'
-        }
-        let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
-        return url
-      },
       // 解码url地址，求restaurant_category_id值
       getCategoryId (url) {
-       // let urlData = decodeURIComponent(url).split('=')[3].split(':')[3].replace('}&navType', '')
         let urlData = decodeURIComponent(url).split('=')[3].replace('&navType', '')
         if (/restaurant_category_id/gi.test(urlData)) {
           return JSON.parse(urlData).restaurant_category_id
@@ -144,10 +117,9 @@
           return ''
         }
       },
-      ...mapMutations({
-        setLatitude: 'SET_LATITUDE',
-        setLongitude: 'SET_LONGITUDE'
-      })
+      ...mapMutations([
+        'SET_LATITUDE', 'SET_LONGITUDE', 'SET_GEOHASH'
+      ])
     },
     components: {
       EHeader,

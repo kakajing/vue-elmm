@@ -40,7 +40,7 @@
                     @click="getCategoryIds(detailItem.id, detailItem.name)"
                     :class="{category_right_choosed: restaurant_category_ids == detailItem.id || (!restaurant_category_ids)&&index == 0}"
                 >
-                  <img :src="imgBaseUrl + detailItem.image_url + '.png'" v-if="index" class="category_icon">
+                  <img :src="getImgPath(detailItem.image_url)" v-if="index" class="category_icon">
                   <span>{{detailItem.name}}</span>
                   <span>{{detailItem.count}}</span>
                 </li>
@@ -196,8 +196,10 @@
   import { getFoodCategory, getFoodRestaurants, getFoodDelivery, getFoodFilter, getFoodSort } from 'api/food'
   import { imgBaseUrl } from 'common/js/config'
   import { mapState, mapMutations } from 'vuex'
+  import {getImgPath} from 'common/js/mixin'
 
   export default{
+    mixins: [getImgPath],
     data () {
       return {
         headTitle: '',
@@ -219,7 +221,7 @@
         support_ids: [],        // 选中的商铺活动列表
         filterNum: 0,      // 所选中的所有样式的集合
         deliveryId: '',
-        deliveryName: ''
+        deliveryName: '',
       }
     },
     computed: {
@@ -228,7 +230,14 @@
       ])
     },
     created () {
+      this.SET_LATITUDE(this.latitude)
+      this.SET_LONGITUDE(this.longitude)
       this.initData()
+    },
+    mounted () {
+      this.getFoodRestaurants()
+      this.getFoodCategory()
+      this.getFoodDelivery()
     },
     methods: {
       initData () {
@@ -237,39 +246,43 @@
         this.foodTitle = this.headTitle
         this.restaurant_category_id = this.$route.query.restaurant_category_id
         // 刷新页面时，vuex状态丢失，经度纬度需要重新获取
-        if (!this.latitude) {
-          // 获取位置信息
-          msiteAdress().then(res => {
-            // 记录当前经度纬度
-            this.SET_LATITUDE(res.latitude)
-            this.SET_LONGITUDE(res.longitude)
-            // 获取category 种类列表
-            getFoodCategory(this.latitude, this.longitude).then(resq => {
-              this.category = resq
-              this.category.forEach(item => {
-                if (this.restaurant_category_id === item.id) {
-                  this.categoryDetail = item.sub_categories
-                }
-              })
-            })
-
-            // 获取商铺列表
-            getFoodRestaurants(this.latitude, this.longitude, this.extras, this.restaurant_category_id).then(res2 => {
-              this.shopListArr = Array.from(Object.keys(res2.items).map(key => res2.items[key].restaurant))
-            })
-
-            // 获取筛选列表的配送方式及商铺活动
-            getFoodDelivery(this.latitude, this.longitude).then(res3 => {
-              this.delivery = res3.delivery_mode
-              this.deliveryId = res3.delivery_mode.id
-              this.deliveryName = res3.delivery_mode.text
-              this.supports = res3.supports
-              this.supports.forEach((item, index) => {
-                this.support_ids[index] = {status: false, id: item.id}
-              })
-            })
+       if (!this.latitude) {
+         msiteAdress(this.geohash).then(res => {
+           this.SET_LATITUDE(res.latitude)
+           this.SET_LONGITUDE(res.longitude)
+         })
+       }
+      },
+      // 获取category 种类列表
+      getFoodCategory() {
+        getFoodCategory(this.latitude, this.longitude).then(res => {
+          this.category = res
+          this.category.forEach(item => {
+            if (this.restaurant_category_id === item.id) {
+              this.categoryDetail = item.sub_categories
+            }
           })
-        }
+        })
+      },
+      // 获取商铺列表
+      getFoodRestaurants () {
+        getFoodRestaurants(this.latitude, this.longitude, this.extras, this.restaurant_category_id).then(res2 => {
+          this.shopListArr = Array.from(Object.keys(res2.items).map(key => res2.items[key].restaurant))
+//          console.log(res2)
+        })
+      },
+      // 获取筛选列表的配送方式及商铺活动
+      getFoodDelivery () {
+        getFoodDelivery(this.latitude, this.longitude).then(res => {
+          this.delivery = res.delivery_mode
+          this.deliveryId = res.delivery_mode.id
+          this.deliveryName = res.delivery_mode.text
+          this.supports = res.supports
+          this.supports.forEach((item, index) => {
+            this.support_ids[index] = {status: false, id: item.id}
+          })
+        })
+
       },
       // 点击顶部三个选项，展示不同的列表，选中当前选项进行展示，同时收回其他选项
       chooseType (type) {
@@ -360,18 +373,6 @@
           this.shopListArr = Array.from(Object.keys(res.items).map(key => res.items[key].restaurant))
         })
         this.sortBy = ''
-      },
-      // 传递过来的图片地址需要处理后才能正常使用
-      subImgUrl (path) {
-        let suffix
-        //  console.log(path)
-        if (path.indexOf('jpeg') !== -1) {
-          suffix = '.jpeg'
-        } else {
-          suffix = '.png'
-        }
-        let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
-        return url
       },
       ...mapMutations([
         'SET_LATITUDE',
