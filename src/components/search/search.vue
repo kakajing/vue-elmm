@@ -85,11 +85,8 @@
     },
     mounted () {
       if (getStore('searchHistory')) {
-        this.searchHistory = JSON.parse('searchHistory')
+        this.searchHistory = JSON.parse(getStore('searchHistory'))
       }
-    },
-    created () {
-
     },
     computed: {
       ...mapState([

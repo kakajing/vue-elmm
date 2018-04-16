@@ -95,7 +95,7 @@
                       <span class="menu_item_description">{{item.description}}</span>
                     </section>
                     <span class="menu_detail_header_right" @click="showTitleDetail(index)"></span>
-                    <p class="description_tip" v-show="index == titleDetailIndex">
+                    <p class="description_tip" v-if="index == titleDetailIndex">
                       <span>{{item.name}}</span>
                       {{item.description}}
                     </p>
@@ -136,7 +136,7 @@
                         <span>¥{{food.specfoods[0].price}}</span>
                         <span v-if="food.specifications.length">起</span>
                       </section>
-                      <buy-cart :foods="food" :shopId="shopId" @moveInCart="listenInCart"></buy-cart>
+                      <buy-cart :geohash="geohash" :foods="food" :shopId="shopId" @moveInCart="listenInCart"></buy-cart>
                     </footer>
                   </section>
                 </li>
@@ -146,8 +146,10 @@
           <!--底部购物车结算-->
           <section class="buy_cart_container">
             <section @click="toggleCartList" class="cart_icon_num">
-              <div class="cart_icon_container" ref="cartContainer"
-                   :class="{cart_icon_activity: totalPrice > 0, move_in_cart:receiveInCart}">
+              <div class="cart_icon_container"
+                   ref="cartContainer"
+                   :class="{cart_icon_activity: totalPrice > 0, move_in_cart:receiveInCart}"
+              >
                 <span class="cart_list_length" v-if="totalNum">{{totalNum}}</span>
                 <svg class="cart_icon">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-icon"></use>
@@ -303,7 +305,7 @@
         changeShowType: 'food',   //切换显示商品或者评价
         shopDetailData: null, // 商铺详情
         showActivities: false, // 是否显示活动详情
-        menuList: [],     // 食品列表
+        menuList: [],     // 菜单分类列表
         menuIndex: 0,      // 已选菜单索引值，默认为0
         menuIndexChange: true,  // 解决选中index时，scroll监听事件重复判断设置index的bug
         shopListTop: [],    // 商品列表的高度集合
@@ -544,18 +546,17 @@
         this.toggleCartList()
         this.CLEAR_CART(this.shopId)
       },
-      listenInCart () {},
-      // 传递过来的图片地址需要处理后才能正常使用
-      subImgUrl (path) {
-        let suffix
-        //  console.log(path)
-        if (path.indexOf('jpeg') !== -1) {
-          suffix = '.jpeg'
-        } else {
-          suffix = '.png'
+      //监听圆点是否进入购物车
+      listenInCart () {
+        if (!this.receiveInCart) {
+          this.receiveInCart = true
+          this.$refs.cartContainer.addEventListener('animationend', () => {
+            this.receiveInCart = false
+          })
+          this.$refs.cartContainer.addEventListener('webkitAnimationEnd', () => {
+            this.receiveInCart = false
+          })
         }
-        let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix
-        return url
       },
       //页面下拉至底部，加载更多
       loaderMoreRating(){

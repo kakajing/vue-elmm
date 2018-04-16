@@ -130,7 +130,9 @@
       //加入购物车，计算按钮位置。
       addToCart(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock, event){
         this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock})
+        // 鼠标事件右边距离页面左边的距离
         this.elLeft = event.target.getBoundingClientRect().left
+        // 鼠标事件下边距离页面上边的距离
         this.elBottom = event.target.getBoundingClientRect().bottom
         this.showMoveDot.push(true)
       },
