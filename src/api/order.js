@@ -6,7 +6,7 @@ import qs from 'qs'
 
 export function checkOut(entities, geohash) {
   const url = '/restapi/booking/v1/carts/checkout'
-  const data = {
+  const data = Object.assign({}, {
     address_id: 0,
     come_from: 'mobile',
     deliver_time: '',
@@ -21,10 +21,11 @@ export function checkOut(entities, geohash) {
     sub_channel: '',
     tying_entities: [],
     user_id: 1443333514
-  }
+  })
 
-  return axios.post(url, qs.stringify(data))
-  //   .then((response) => {
-  //   res.json(response.data)
-  // })
+  return axios.post(url, qs.stringify(data), {
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    arrayFormat: 'brackets'
+  })
 }
+

@@ -1,19 +1,162 @@
 <template>
-  <div>
-    <e-header :head-title="headTitle" :go-back="goBack"></e-header>
-    <div class="confirmOderContainer">确认订单页</div>
+  <div class="confirmOrderContainer">
+    <section>
+      <e-header :head-title="headTitle" :go-back="goBack" signin-up='confirmOrder'></e-header>
+      <section class="address_container">
+        <div class="address_empty_left">
+          <svg class="location_icon">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#location"></use>
+          </svg>
+          <span class="add_address">请添加一个收获地址</span>
+        </div>
+        <svg class="address_empty_right">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+        </svg>
+      </section>
+      <section class="delivery_model container_style">
+        <p class="deliver_text">送达时间</p>
+        <section class="deliver_time">
+          <p>尽快送达 | 预计</p>
+          <p >蜂鸟专送</p>
+        </section>
+      </section>
+      <section class="pay_way container_style">
+        <header class="header_style">
+          <span>支付方式</span>
+          <div class="more_type">
+            <span>在线支付</span>
+            <svg class="address_empty_right">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+            </svg>
+          </div>
+        </header>
+        <section class="hongbo">
+          <span>红包</span>
+          <span>暂时只在饿了么 APP 中支持</span>
+        </section>
+      </section>
+      <section class="food_list">
+        <header>
+          <!--<img :src="">-->
+          <span></span>
+        </header>
+        <ul class="food_list_ul">
+          <li class="food_item_style">
+            <p class="food_name ellipsis"></p>
+            <div class="num_price">
+              <span>x </span>
+              <span>¥</span>
+            </div>
+          </li>
+        </ul>
+        <div class="food_item_style">
+          <p class="food_name ellipsis"></p>
+          <div class="num_price">
+            <span></span>
+            <span>¥ </span>
+          </div>
+        </div>
+        <div class="food_item_style total_price">
+          <p class="food_name ellipsis">订单 ¥</p>
+          <div class="num_price">
+            <span></span>
+            <span>待支付 ¥</span>
+          </div>
+        </div>
+      </section>
+      <section class="pay_way container_style">
+        <header class="header_style">
+          <span>订单备注</span>
+          <div class="more_type">
+            <span>口味偏、好等</span>
+            <svg class="address_empty_right">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+            </svg>
+          </div>
+        </header>
+        <section class="hongbo">
+          <span>发票抬头</span>
+          <span>商家不支持开发票</span>
+        </section>
+      </section>
+      <section class="confrim_order">
+        <p>待支付 ¥</p>
+        <p>确认下单</p>
+      </section>
+      <transition name="fade">
+        <div></div>
+      </transition>
+    </section>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
+  import {imgBaseUrl} from 'common/js/config'
+  import {mapState, mapMutations} from 'vuex'
+  import {checkOut} from 'api/order'
 
   export default {
     data () {
       return {
         headTitle: '确认订单',
-        goBack: true
+        goBack: true,
+        geohash: '',
+        shopId: null,
+        showLoading: true,
+        checkoutData: null,
+        shopCart: null,
+        imgBaseUrl
       }
+    },
+    created () {
+      this.geohash = this.$route.query.geohash
+      this.shopId = this.$route.query.shopId
+      this.INIT_BUYCART()
+      this.shopCart = this.cartList[this.shopId]
+    },
+    computed: {
+      ...mapState([
+        'cartList'
+      ]),
+    },
+    mounted(){
+      this.initData()
+    },
+    methods: {
+      initData () {
+        let newArr = new Array
+        Object.values(this.shopCart).forEach(categoryItem => {
+          Object.values(categoryItem).forEach(itemValue => {
+            Object.values(itemValue).forEach(item => {
+              newArr.push({
+                attrs: [],
+                extra: {},
+                id: item.id,
+                item_id: item.item_id,
+                name: item.name,
+                packing_fee: item.packing_fee,
+                price: item.price,
+                quantity: item.num,
+                sku_id: item.sku_id,
+                specs: item.specs,
+                stock: item.stock,
+                view_discount_price: item.view_discount_price,
+                view_original_price: item.view_original_price,
+                weight: item.weight
+              })
+            })
+          })
+        })
+        let newArr2 = JSON.stringify(newArr)
+        checkOut([newArr2], this.geohash).then(res => {
+          console.log(res)
+//          this.checkoutData = res
+        })
+      },
+      ...mapMutations([
+        'INIT_BUYCART'
+      ])
     },
     components: {
       EHeader
