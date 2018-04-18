@@ -61,7 +61,7 @@ export function getFoodDelivery (latitude, longitude) {
 
 // 获取筛选后的商家列表
 export function getFoodFilter (latitude, longitude, extras, supportIds, deliveryMode, restaurantCategoryId) {
-  const url = '/api/foodFilter'
+  const url = '/restapi/shopping/v3/restaurants'
 
   const data = Object.assign({}, {
     latitude,

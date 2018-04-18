@@ -17,7 +17,7 @@
       </ul>
     </section>
     <section class="shop_status_container">
-      <router-link :to="{path: '/shop/shopDetail/shopSafe', query: {restaurant_id: shopDetail.id}}" class="shop_status_header">
+      <router-link :to="{path: '/shop/shopDetail/shopSafe', query: {restaurant_id: shopDetail.authentic_id}}" class="shop_status_header">
         <span class="shop_detail_title">食品监督安全公示</span>
         <div>
           <span class="identification_detail">企业认证详情</span>
@@ -88,10 +88,6 @@
       ])
     },
     methods: {
-      showLicenseImage (img) {
-        this.licenseImg = img
-        this.showLicenseImg = true
-      }
     },
     components: {
       EHeader

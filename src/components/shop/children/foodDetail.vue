@@ -24,15 +24,6 @@
           <span>好评率 {{satisfy_rate}}%</span>
         </p>
       </section>
-      <!--<section class="cart_list_control">-->
-        <!--<svg @click="removeOutCart(food.category_id, food.item_id, food.food_id, food.name, food.price, food.specs)">-->
-          <!--<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>-->
-        <!--</svg>-->
-        <!--<span class="cart_num"></span>-->
-        <!--<svg class="cart_add" @click="addToCart(food.category_id, food.item_id, food.food_id, food.name, food.price, food.specs)">-->
-          <!--<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>-->
-        <!--</svg>-->
-      <!--</section>-->
     </section>
   </div>
 </template>

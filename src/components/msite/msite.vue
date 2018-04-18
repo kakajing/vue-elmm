@@ -73,7 +73,7 @@
     },
     methods: {
       initData () {
-        msiteAdress(this.geohash).then(res => {
+        msiteAdress().then(res => {
           this.msiteTitle = res.name
           this.latitude = res.latitude
           this.longitude = res.longitude

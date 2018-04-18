@@ -6,8 +6,9 @@ import axios from 'axios'
 /**
  * 获取msite页面地址信息
  */
-export function msiteAdress (geohash) {
-  const url = '/restapi/v1/pois/' + geohash
+export function msiteAdress () {
+  // const url1 = '/restapi/v1/pois/' + geohash
+  const url = '/restapi/v1/pois/ww0v9utsyc1y'
   return axios.get(url).then((res) => {
     return Promise.resolve(res.data)
   })

@@ -29,29 +29,16 @@
           </header>
           <ul>
             <li>
-              <p>企业名称</p>
-              <!--<p>{{shopDetail.identification.company_name}}</p>-->
+              <p>单位名称：{{qualificationData.corp_name}}</p>
             </li>
             <li>
-              <p>工商执照注册号</p>
-              <!--<p>{{shopDetail.identification.identificate_agency}}</p>-->
+              <p>经营地址：{{qualificationData.license_location}}</p>
             </li>
             <li>
-              <p>注册资本</p>
-              <!--<p>{{shopDetail.identification.registered_number}}</p>-->
+              <p>法定代表人：{{qualificationData.license_legal_person}}</p>
             </li>
             <li>
-              <p>注册地址</p>
-              <!--<p>{{shopDetail.identification.registered_address}}</p>-->
-            </li>
-            <li>
-              <p>属地监管所</p>
-              <!--<p>{{shopDetail.identification.registered_principal}}</p>-->
-            </li>
-            <li>
-              <p>法定代表人</p>
-              <!--<p>{{shopDetail.identification.legal_person}}</p>-->
-            </li>
+
             <li>
               <p>经营范围</p>
               <!--<p>{{shopDetail.identification.operation_period}}</p>-->
@@ -62,32 +49,24 @@
           <header>餐饮许可证</header>
           <ul>
             <li>
-              <p>营业范围</p>
-              <!--<p>{{shopDetail.identification.operation_period}}</p>-->
+              <p>经营范围： {{qualificationData.service_license_business_scope}}</p>
             </li>
             <li>
-              <p>许可证有效期</p>
-              <!--<p>{{shopDetail.identification.licenses_date}}</p>-->
+              <p>有效期：{{qualificationData.service_license_expire_date}}</p>
             </li>
             <li>
-              <p>许可证号</p>
-              <!--<p>{{shopDetail.identification.licenses_number}}</p>-->
+              <p>许可证号：{{qualificationData.restaurant_service_licence_no}}</p>
             </li>
             <li>
               <p>发证时间</p>
               <!--<p>{{shopDetail.identification.licenses_scope}}</p>-->
-            </li>
-            <li>
-              <p>发证机关</p>
-              <!--<p>{{shopDetail.identification.registered_principal}}</p>-->
             </li>
           </ul>
         </section>
         <section class="license_img shop_status_container">
           <header>许可证书</header>
           <div class="img_container">
-            <!--<img :src="localapi || proapi ? imgBaseUrl + shopDetail.license.business_license_image : getImgPath(shopDetail.license.business_license_image)">-->
-            <!--<img :src="localapi || proapi ? imgBaseUrl + shopDetail.license.catering_service_license_image : getImgPath(shopDetail.license.catering_service_license_image)">-->
+            <img :src="getImgPath(qualificationData.images)">
           </div>
         </section>
       </section>
@@ -98,14 +77,17 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import {mapState} from 'vuex'
-//  import {qualification} from 'api/shop'
+  import {qualification} from 'api/shop'
+  import {getImgPath} from 'common/js/mixin'
 
   export default {
+    mixins: [getImgPath],
     data () {
       return {
         headTitle: '食品监督安全公示',
         goBack: true,
-        restaurant_id: ''
+        restaurant_id: '',
+        qualificationData: null
       }
     },
     computed: {
@@ -115,14 +97,14 @@
     },
     mounted () {
       this.restaurant_id = this.$route.query.restaurant_id
-      console.log(this.restaurant_id)
+      this.getQualification()
     },
     methods: {
-//      getQualification () {
-//        qualification(this.restaurant_id, this.latitude, this.longitude).then(res => {
-//          console.log(res)
-//        })
-//      }
+      getQualification () {
+        qualification(this.restaurant_id, this.latitude, this.longitude).then(res => {
+          this.qualificationData = res
+        })
+      }
     },
     components: {
       EHeader

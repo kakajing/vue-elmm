@@ -1,6 +1,11 @@
 <template>
-  <div class="shop_container">
+  <div >
     <section class="shop_container">
+      <nav class="goBack" @click="goback">
+        <svg width="4rem" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
+          <polyline points="12,18 4,9 12,0" style="fill:none;stroke:rgb(255,255,255);stroke-width:3"/>
+        </svg>
+      </nav>
       <!--店铺明细-->
       <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
         <img :src="getImgPath(img)" class="header_cover_img">
@@ -160,7 +165,7 @@
                 <div>配送费¥{{deliveryFee}}</div>
               </div>
             </section>
-            <section class="goToPay" :class="{goToPay_activity: minimumOrderAmount < 0}">
+            <section class="goToPay" :class="{goToPay_acitvity: minimumOrderAmount < 0}">
               <span class="goToPay_button_style" v-if="minimumOrderAmount > 0">还差¥{{minimumOrderAmount}}起送</span>
               <!--<span class="goToPay_button_style" v-else >去结算</span>-->
               <router-link :to="{path:'/confirmOrder', query:{geohash, shopId}}" class="goToPay_button_style" v-else>去结算</router-link>
@@ -335,8 +340,6 @@
       this.shopId = this.$route.query.id
       //初始化购物车，获取存储在localStorage中的购物车商品信息
       this.INIT_BUYCART()
-    },
-    mounted () {
       msiteAdress().then(res => {
         this.SET_LATITUDE(res.latitude)
         this.SET_LONGITUDE(res.longitude)
@@ -354,9 +357,12 @@
           this.$nextTick(() => {
             this._initScroll()
             this._calculateHeight()
+            console.log(this.menuScroll)
           })
         })
       })
+    },
+    mounted () {
       this.getRatingScores()
       this.getRatingTags()
       this.getRatingList()
@@ -576,6 +582,9 @@
           this.preventRepeatRequest = false
         }
       },
+      goback(){
+        this.$router.go(-1)
+      },
       ...mapMutations([
         'SET_LATITUDE',
         'SET_LONGITUDE',
@@ -591,7 +600,7 @@
       showLoading (value) {
         if (!value) {
           this.$nextTick(() => {
-            this.getFoodListHeight()
+            this._calculateHeight()
             this.initCategoryNum()
           })
         }
@@ -791,7 +800,16 @@
     left: 0;
     height: 100%;
   }
-
+  .goBack{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    z-index: 11;
+    padding-top: 0.2rem;
+    padding-left: 0.2rem;
+  }
   .shop_detail_header{
     overflow: hidden;
     position: relative;
