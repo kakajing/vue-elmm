@@ -38,6 +38,7 @@
       </header>
       <shop-list :geohash="geohash" :shopListArr="shopListArr"></shop-list>
     </div>
+    <foot-guide></foot-guide>
   </div>
 </template>
 
@@ -49,6 +50,7 @@
   import ShopList from 'base/shop-list/shop-list'
   import { mapMutations } from 'vuex'
   import {getImgPath} from 'common/js/mixin'
+  import FootGuide from 'base/footer/footGuide'
 
   export default{
     mixins: [getImgPath],
@@ -123,7 +125,8 @@
     },
     components: {
       EHeader,
-      ShopList
+      ShopList,
+      FootGuide
     }
   }
 </script>

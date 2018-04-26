@@ -3,20 +3,21 @@
     <e-header :head-title="profileTitle" :go-back="goBack"></e-header>
     <section class="profile_number">
       <router-link to="/profile/info" class="profile_link">
-        <span class="privateImage">
+        <img :src="getImgPath(this.avatar)" class="privateImage" v-if="this.avatar">
+        <span class="privateImage" v-else>
           <svg class="privateImage_svg">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#avatar_default"></use>
           </svg>
         </span>
         <div class="user_info">
-          <p>ffdfdee</p>
+          <p>{{userName}}</p>
           <p>
             <span class="user_icon">
               <svg class="icon_mobile" fill="#fff">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#mobile"></use>
               </svg>
             </span>
-            <span class="icon_mobile_number">15800319949</span>
+            <span class="icon_mobile_number">{{mobile}}</span>
           </p>
         </div>
         <span class="arrow">
@@ -29,15 +30,15 @@
     <section class="info_data">
       <ul class="clear">
         <router-link to="/profile/balance" tag="li" class="info_data_link">
-          <span class="info_data_top"><b>0.00</b>元</span>
+          <span class="info_data_top"><b>{{balance}}</b>元</span>
           <span class="info_data_bottom">我的余额</span>
         </router-link>
         <router-link to="/profile/benefit" tag="li" class="info_data_link">
-          <span class="info_data_top"><b>1</b>个</span>
+          <span class="info_data_top"><b>{{count}}</b>个</span>
           <span class="info_data_bottom">我的优惠</span>
         </router-link>
         <router-link to="/profile/points" tag="li" class="info_data_link">
-          <span class="info_data_top"><b>1010</b>分</span>
+          <span class="info_data_top"><b>{{pointNumber}}</b>分</span>
           <span class="info_data_bottom">我的积分</span>
         </router-link>
       </ul>
@@ -94,7 +95,7 @@
     </section>
     <section class="profile_1reTe">
       <!-- 服务中心 -->
-      <router-link to='/profile/service' class="myOrder">
+      <router-link to='/service' class="myOrder">
         <aside>
           <svg fill="#4aa5f0">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#service"></use>
@@ -126,6 +127,7 @@
         </div>
       </router-link>
     </section>
+    <foot-guide></foot-guide>
     <transition name="router_slid">
       <router-view></router-view>
     </transition>
@@ -135,14 +137,22 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import {mapState} from 'vuex'
+  import {getImgPath} from 'common/js/mixin'
+  import FootGuide from 'base/footer/footGuide'
 
   export default {
+    mixins: [getImgPath],
     data () {
       return {
         profileTitle: '我的',
         goBack: true,
-        count: '',       // 优惠券个数
-        pontNumber: ''  // 积分
+        getUserInfo: {},   //得到数据
+        userName: '',      //用户名
+        mobile:'',        //电话号码
+        balance: '',      //我的余额
+        count: '',        //优惠券个数
+        pointNumber: '',   //积分数
+        avatar: ''        //头像地址
       }
     },
     computed: {
@@ -150,8 +160,18 @@
         'userInfo'
       ])
     },
+    mounted () {
+      this.getUserInfo = this.userInfo
+      this.avatar = this.getUserInfo.avatar
+      this.userName = this.getUserInfo.username
+      this.mobile = this.getUserInfo.mobile
+      this.balance = this.getUserInfo.balance
+      this.count = this.getUserInfo.gift_amount
+      this.pointNumber = this.getUserInfo.point
+    },
     components: {
-      EHeader
+      EHeader,
+      FootGuide
     }
   }
 
@@ -160,9 +180,14 @@
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
 
-  .profile-number{
+  .profile_page{
+    p, span{
+      font-family: Helvetica Neue,Tahoma,Arial;
+    }
+  }
+  .profile_number{
     padding-top:1.95rem;
-    .profile-link{
+    .profile_link{
       display:block;
       display:flex;
       box-align: center;
@@ -182,7 +207,7 @@
           @include wh(2.5rem,2.5rem);
         }
       }
-      .user-info{
+      .user_info{
         margin-left:.48rem;
         -webkit-box-flex: 1;
         -ms-flex-positive: 1;
@@ -190,7 +215,7 @@
         p{
           font-weight:700;
           @include sc(.8rem,$fc);
-          .user-icon{
+          .user_icon{
             @include wh(0.5rem,0.75rem);
             display:inline-block;
             vertical-align:middle;
@@ -202,6 +227,7 @@
           .icon_mobile_number{
             display:inline-block;
             @include sc(.57333rem,$fc);
+
           }
         }
 
@@ -215,7 +241,7 @@
       }
     }
   }
-  .info-data{
+  .info_data{
     width:100%;
     background:$fc;
     box-sizing: border-box;
@@ -245,6 +271,7 @@
           @include sc(.57333rem,#666);
           font-weight:400;
           padding-bottom:.453333rem;
+
         }
       }
       .info_data_link:nth-of-type(2){
@@ -265,7 +292,7 @@
       }
     }
   }
-  .profile-1reTe{
+  .profile_1reTe{
     margin-top:.4rem;
     background:$fc;
     .myOrder{
@@ -308,6 +335,7 @@
     transition: all .4s;
   }
   .router-slid-enter, .router-slid-leave-active {
-    transform: translateX(100%);
+    transform: translate3d(2rem, 0, 0);
+    opacity: 0;
   }
 </style>
