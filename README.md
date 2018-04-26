@@ -36,6 +36,10 @@ vue2 + vuex + vue-router + axios + webpack + ES6 + sass + flex + svg
 
 [饿了么45个页面重构（八）：appear的用法和购物车按钮组件开发](https://kakajing.github.io/2018/04/12/%E9%A5%BF%E4%BA%86%E4%B9%8845%E4%B8%AA%E9%A1%B5%E9%9D%A2%E9%87%8D%E6%9E%84%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9Aappear%E7%9A%84%E7%94%A8%E6%B3%95%E5%92%8C%E8%B4%AD%E7%89%A9%E8%BD%A6%E6%8C%89%E9%92%AE%E7%BB%84%E4%BB%B6%E5%BC%80%E5%8F%91/)
 
+[饿了么45个页面重构（九）：购物车页面开发](https://kakajing.github.io/2018/04/14/%E9%A5%BF%E4%BA%86%E4%B9%8845%E4%B8%AA%E9%A1%B5%E9%9D%A2%E9%87%8D%E6%9E%84%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E8%B4%AD%E7%89%A9%E8%BD%A6%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91/)
+
+[饿了么45个页面重构（十）：router传参和详情页面开发](https://kakajing.github.io/2018/04/16/%E9%A5%BF%E4%BA%86%E4%B9%8845%E4%B8%AA%E9%A1%B5%E9%9D%A2%E9%87%8D%E6%9E%84%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9Arouter%E4%BC%A0%E5%8F%82%E5%92%8C%E8%AF%A6%E6%83%85%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91/)
+
 
 
 ## Build Setup
