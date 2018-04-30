@@ -9,7 +9,7 @@
       <!--店铺明细-->
       <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
         <img :src="getImgPath(img)" class="header_cover_img">
-        <section class="description_header">
+        <section class="description_header" v-if="shopDetailData">
           <router-link to="/shop/shopDetail" class="description_top">
             <section class="description_left">
               <img :src="getImgPath(img)">
@@ -298,7 +298,6 @@
   import {animate} from 'common/js/mUtils'
   import {getImgPath, loadMore} from 'common/js/mixin'
   import BScroll from 'better-scroll'
-
   export default {
     mixins: [getImgPath, loadMore],
     data () {
@@ -343,14 +342,12 @@
       msiteAdress().then(res => {
         this.SET_LATITUDE(res.latitude)
         this.SET_LONGITUDE(res.longitude)
-
         // 获取商铺信息
         shopDetails(this.shopId, this.extras, this.latitude, this.longitude).then(res => {
           this.shopDetailData = res
           this.img = res.image_path
           this.RECORD_SHOPDETAIL(this.shopDetailData)
         })
-
         // 获取商铺食品列表
         menuList(this.shopId).then(res => {
           this.menuList = res
@@ -435,11 +432,9 @@
         this.ratingTagsIndex = index
         this.ratingOffset = 0
         this.ratingTagName = name
-
         tatingTagName(this.shopId, name).then(res => {
           this.ratingList = res
         })
-
       },
       //加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
       addToCart (category_id, item_id, food_id, name, price, specs) {
@@ -626,7 +621,6 @@
 
 <style lang="scss" scoped>
   @import "../../common/scss/mixin";
-
   @keyframes myMove{
     0%   { transform: scale(1) }
     25%  { transform: scale(.8) }
@@ -634,7 +628,6 @@
     75%  { transform: scale(.9) }
     100% { transform: scale(1) }
   }
-
   .change_show_type{
     display: flex;
     background-color: #fff;
@@ -944,11 +937,8 @@
           @include cl;
         }
       }
-
-
     }
   }
-
   .food_container{
     display: flex;
     flex: 1;
