@@ -10,7 +10,7 @@
       </div>
       <router-link :to="'/city/' + guessCityId" class="guess_city">
         <span>{{guessCity}}</span>
-        <span></span>
+        <!--<span></span>-->
       </router-link>
     </nav>
     <section class="group_city_container">
@@ -61,7 +61,6 @@
     methods: {
       getCities () {
         getCities().then((res) => {
-        //  console.log(res)
           this.groupCity = res
         })
       },

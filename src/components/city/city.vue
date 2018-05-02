@@ -26,9 +26,9 @@
 <script type="text/ecmascript-6">
   import EHeader from 'components/e-header/e-header'
   import { query } from 'api/city'
-  import {getGuess} from 'api/home'
+  import { getGuess } from 'api/home'
   import { getStore, setStore } from 'common/js/mUtils'
-  import {mapMutations} from 'vuex'
+  import { mapMutations } from 'vuex'
 
   export default{
     data () {
@@ -67,7 +67,6 @@
           this.longitude = res.longitude
           this.SET_LATITUDE(this.latitude)
           this.SET_LONGITUDE(this.longitude)
-          //  console.log(res)
         })
       },
       postPois () {

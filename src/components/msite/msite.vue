@@ -1,6 +1,6 @@
 <template>
   <div>
-    <e-header signin-up='msite'>
+    <e-header :signin-up="signin_up">
       <router-link to="/search/geohash" class="link_search" slot="search">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
           <circle cx="9" cy="9" r="8" stroke="rgb(255,255,255)" stroke-width="2" fill="none"/>
@@ -12,9 +12,9 @@
       </router-link>
     </e-header>
     <nav class="msite_nav">
-      <div class="swiper-container" v-if="foodTypes.length">
+      <div class="swiper_container" v-if="foodTypes.length">
         <div class="swiper_wrapper">
-          <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
+          <div class="swiper_slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
             <router-link :to="{path: '/food',
                                 query: {geohash, title: foodItem.name, restaurant_category_id: getCategoryId(foodItem.link)}}"
                          v-for="foodItem in item" :key="foodItem.id"
@@ -26,7 +26,7 @@
             </router-link>
           </div>
         </div>
-        <div class="swiper-pagination"></div>
+        <div class="swiper_pagination"></div>
       </div>
     </nav>
     <div class="shop_list_container">
@@ -56,6 +56,7 @@
     mixins: [getImgPath],
     data () {
       return {
+        signin_up: 'msite',
         geohash: '',   // city页面传递过来的地址geohash
         msiteTitle: '获取地址中...',   // msiet页面头部标题
         foodTypes: [],   // 食品分类列表
@@ -102,9 +103,9 @@
         })
       },
       initSwiper () {
-        this.swiper = new Swiper('.swiper-container', {
+        this.swiper = new Swiper('.swiper_container', {
           pagination: {
-            el: '.swiper-pagination',
+            el: '.swiper_pagination',
             type: 'bullets'
           },
           loop: true
@@ -158,10 +159,10 @@
     background-color: #fff;
     border-bottom: 0.025rem solid $bc;
     height: 10.6rem;
-    .swiper-container {
+    .swiper_container {
       @include wh(100%, auto);
       padding-bottom: 0.6rem;
-      .swiper-pagination {
+      .swiper_pagination {
         bottom: 0.2rem;
       }
     }
