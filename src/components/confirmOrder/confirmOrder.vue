@@ -2,17 +2,28 @@
   <div class="confirmOrderContainer">
     <section>
       <e-header :head-title="headTitle" :go-back="goBack" signin-up='confirmOrder'></e-header>
-      <section class="address_container">
+      <router-link :to="{path: '/confirmOrder/chooseAddress'}" class="address_container">
         <div class="address_empty_left">
           <svg class="location_icon">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#location"></use>
           </svg>
-          <span class="add_address">请添加一个收获地址</span>
+          <div class="add_address" >请添加一个收获地址</div>
+            <div class="address_detail_container">
+                <header>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </header>
+                <div class="address_detail ellipsis">
+                    <span :style="{backgroundColor: iconColor()}"></span>
+                    <p></p>
+                </div>
+            </div>
         </div>
         <svg class="address_empty_right">
           <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
         </svg>
-      </section>
+      </router-link>
       <section class="delivery_model container_style">
         <p class="deliver_text">送达时间</p>
         <section class="deliver_time">
@@ -65,7 +76,7 @@
         </div>
       </section>
       <section class="pay_way container_style">
-        <header class="header_style">
+        <router-link :to="{path: '/confirmOrder/remark'}" class="header_style">
           <span>订单备注</span>
           <div class="more_type">
             <span>口味偏、好等</span>
@@ -73,18 +84,24 @@
               <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
             </svg>
           </div>
-        </header>
-        <section class="hongbo">
+        </router-link>
+        <router-link :to="{path: '/confirmOrder/invoice'}" class="hongbo" >
           <span>发票抬头</span>
-          <span>商家不支持开发票</span>
-        </section>
+          <span>
+
+            <svg class="address_empty_right">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+            </svg>
+          </span>
+        </router-link>
+
       </section>
       <section class="confrim_order">
         <p>待支付 ¥</p>
         <p>确认下单</p>
       </section>
-      <transition name="fade">
-        <div></div>
+      <transition name="router-slid">
+        <router-view></router-view>
       </transition>
     </section>
   </div>
@@ -124,35 +141,37 @@
       this.initData()
     },
     methods: {
-      initData () {
+      initData(){
         let newArr = new Array
         Object.values(this.shopCart).forEach(categoryItem => {
-          Object.values(categoryItem).forEach(itemValue => {
+          Object.values(categoryItem).forEach(itemValue=> {
             Object.values(itemValue).forEach(item => {
               newArr.push({
                 attrs: [],
                 extra: {},
                 id: item.id,
-                item_id: item.item_id,
                 name: item.name,
                 packing_fee: item.packing_fee,
                 price: item.price,
                 quantity: item.num,
                 sku_id: item.sku_id,
-                specs: item.specs,
+                specs: [item.specs],
                 stock: item.stock,
-                view_discount_price: item.view_discount_price,
-                view_original_price: item.view_original_price,
-                weight: item.weight
               })
             })
           })
         })
-        let newArr2 = JSON.stringify(newArr)
-        checkOut([newArr2], this.geohash).then(res => {
+        //检验订单是否满足条件
+        checkOut([newArr], this.geohash).then(res => {
           console.log(res)
-//          this.checkoutData = res
         })
+
+      },
+      iconColor (name) {
+        switch (name) {
+          case '公司': return '#4cd964'
+          case '学校': return '#3190e8'
+        }
       },
       ...mapMutations([
         'INIT_BUYCART'
@@ -165,8 +184,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "../../common/scss/mixin";
-
+  @import '../../common/scss/mixin';
   .confirmOrderContainer{
     padding-top: 1.95rem;
     padding-bottom: 3rem;
@@ -201,9 +219,9 @@
       .address_detail_container{
         margin-left: .2rem;
         header{
-          @include sc(.65rem, #333);
+          @include sc(.75rem, #333);
           span:nth-of-type(1){
-            font-size: .8rem;
+            font-size: .85rem;
             font-weight: bold;
           }
         }
@@ -215,13 +233,13 @@
             @include sc(.5rem, #fff);
             border-radius: .15rem;
             background-color: #ff5722;
-            height: .6rem;
-            line-height: .6rem;
-            padding: 0 .2rem;
+            height: .65rem;
+            line-height: .65rem;
+            padding: 0 .3rem;
             margin-right: .3rem;
           }
           p{
-            @include sc(.55rem, #777);
+            @include sc(.65rem, #777);
           }
         }
       }
@@ -332,8 +350,7 @@
       .num_price{
         flex: 1;
         @include fj;
-        align-items: center;
-        span:nth-of-type(1){
+        span:nth-of-type(2){
           color: #f60;
         }
       }
@@ -425,8 +442,7 @@
     transition: all .4s;
   }
   .router-slid-enter, .router-slid-leave-active {
-    transform: translate3d(2rem, 0, 0);
-    opacity: 0;
+    transform: translateX(100%);
   }
 </style>
 

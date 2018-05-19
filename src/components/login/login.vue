@@ -14,6 +14,7 @@
       <section class="input_container">
         <input type="text" placeholder="验证码" name="mobileCode" maxlength="6" v-model="mobileCode">
       </section>
+
     </form>
     <form class="loginForm" v-else>
       <section class="input_container">
@@ -79,7 +80,8 @@
         codeNumber: null,     //验证码
         showAlert: false,   //显示提示组件
         alertText: null,     //提示的内容
-        userId: ''
+        userId: '',
+        showCaptcha: false
       }
     },
     created () {
@@ -108,9 +110,10 @@
         })
       },
       getVerifyCode () {
+        this.showCaptcha = !this.showCaptcha
         let data = {
-          captcha_hash: this.captcha_hash,
-          captcha_value: base64ToBlob(this.captchaCodeImg),
+          captcha_hash: this.captcha_hash || '',
+          captcha_value: event,
           mobile: this.phoneNumber
         }
         if (this.rightPhoneNumber) {
@@ -136,7 +139,7 @@
         }
         let sendData = {
           mobile: this.phoneNumber,
-          validate_code: this.mobileCode,
+          validate_code: '',
           validate_token: this.validate_token
         }
         if (this.loginWay) {
@@ -172,14 +175,14 @@
             console.log(res)
           })
         }
-//        if (this.userInfo.user_id) {
-//          this.showAlert = true
-//          this.alertText = this.userInfo.message
-//          if (!this.loginWay) this.getCaptchaCode()
-//        }else{
-//          this.RECORD_USERINFO(this.userInfo)
-//          this.$router.go(-1)
-//        }
+        if (this.userInfo.user_id) {
+          this.showAlert = true
+          this.alertText = this.userInfo.message
+          if (!this.loginWay) this.getCaptchaCode()
+        }else{
+          this.RECORD_USERINFO(this.userInfo)
+          this.$router.go(-1)
+        }
       },
       closeTip () {
         this.showAlert = false
@@ -212,6 +215,7 @@
   .loginForm {
     background-color: #fff;
     margin-top: .6rem;
+
     .input_container {
       display: flex;
       justify-content: space-between;
@@ -322,5 +326,13 @@
     float: right;
     @include sc(.6rem, #3b95e9);
     margin-right: .3rem;
+  }
+
+  .fadeBounce-enter-active, .fadeBounce-leave-active {
+    transition: all .3s;
+  }
+  .fadeBounce-enter, .fadeBounce-leave-active {
+    opacity: 0;
+    transform: scale(.7);
   }
 </style>

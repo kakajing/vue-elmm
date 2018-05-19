@@ -3,15 +3,10 @@
  */
 import axios from 'axios'
 import qs from 'qs'
+// import * as login from 'config/login'
 
 // 获取短信验证码
 export function getMobileCode (captcha_hash, captcha_value, mobile) {
-  const o = {
-    headers: {
-      "content-type": "application/json; charset=utf-8"
-    },
-    credentials: "include"
-  }
   return axios.post('/restapi/eus/login/mobile_send_code', qs.stringify(captcha_hash, captcha_value, mobile), {
     headers: {
       "content-type": "application/json; charset=utf-8"
@@ -24,14 +19,6 @@ export function getMobileCode (captcha_hash, captcha_value, mobile) {
  */
 export function captchas (captcha_str) {
    return axios.post('/restapi/eus/v3/captchas', qs.stringify(captcha_str))
-   //   .then(response => {
-   //   return 'data:image/png;base64,' + btoa(
-   //       new Uint8Array(response.data)
-   //         .reduce((data, byte) => data + String.fromCharCode(byte), '')
-   //     )
-   // }).then(data => {
-   //   return Promise.resolve(data)
-   // })
 }
 
 /**
@@ -39,12 +26,7 @@ export function captchas (captcha_str) {
  */
 export function sendLogin (mobile, validate_code, validate_token) {
   const url = '/restapi/eus/login/login_by_mobile'
-  const o = {
-    headers: {
-      "content-type": "application/json; charset=utf-8"
-    },
-    credentials: "include"
-  }
+
   const data = Object.assign({}, {
     mobile,
     validate_code,
@@ -61,12 +43,7 @@ export function sendLogin (mobile, validate_code, validate_token) {
  */
 export function accountLogin (captcha_hash, captcha_value, username, password) {
   const url = '/restapi/eus/login/login_by_password'
-  const o = {
-    headers: {
-      "content-type": "application/json; charset=utf-8"
-    },
-    credentials: "include"
-  }
+
   const data = Object.assign({}, {
     captcha_hash,
     captcha_value,
@@ -87,3 +64,16 @@ export function getUserInfo (id) {
     return Promise.resolve(res.data)
   })
 }
+
+/**
+ * 以下是临时数据
+ */
+/*const setPromise = data => {
+  return new Promise((resolve, reject) => {
+    resolve(data)
+  })
+}
+
+export const mobileCode = phone => setPromise(login.validate_token)
+export const sendLogin1 = (code, mobile, validate_token) => setPromise(login.userInfo)
+export const accountLogin1 = (username, password, captcha_code) => setPromise(login.userInfo)*/

@@ -9,7 +9,7 @@
       <!--店铺明细-->
       <header class="shop_detail_header" ref="shopHeader" :style="{zIndex: showActivities? '14':'10'}">
         <img :src="getImgPath(img)" class="header_cover_img">
-        <section class="description_header" v-if="shopDetailData">
+        <section class="description_header">
           <router-link to="/shop/shopDetail" class="description_top">
             <section class="description_left">
               <img :src="getImgPath(img)">

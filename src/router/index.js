@@ -17,6 +17,11 @@ import ConfirmOrder from 'components/confirmOrder/confirmOrder'
 import ShopDetail from 'components/shop/children/shopDetail'
 import ShopSafe from 'components/shop/children/children/shopSafe'
 import OrderDetail from 'components/order/children/orderDetail'
+import Remark from 'components/confirmOrder/children/remark'
+import Invoice from 'components/confirmOrder/children/invoice'
+import ChooseAddress from 'components/confirmOrder/children/chooseAddress'
+import AddAddress from 'components/confirmOrder/children/children/addAddress'
+import SearchAddress from 'components/confirmOrder/children/children/children/searchAddress'
 
 Vue.use(Router)
 
@@ -96,7 +101,33 @@ export default new Router({
         //确认订单页
         {
           path: '/confirmOrder',
-          component: ConfirmOrder
+          component: ConfirmOrder,
+          children: [
+            {
+              path: 'remark',
+              component: Remark   // 订单备注
+            },
+            {
+              path: 'invoice',
+              component: Invoice    // 发票
+            },
+            {
+              path: 'chooseAddress',
+              component: ChooseAddress,  // 选择地址
+              children: [
+                {
+                  path: 'addAddress',
+                  component: AddAddress,   // 添加地址
+                  children: [
+                    {
+                      path: 'searchAddress',
+                      component: SearchAddress  // 选择地址
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           path: '/vipcard',

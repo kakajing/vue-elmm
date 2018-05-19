@@ -122,7 +122,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       }),
       // 获取msite页面地址信息
       app.get('/api/msiteAdress', (req, res) => {
-        const url = 'https://www.ele.me/restapi/v1/pois/ww0pd91c0sc'
+        const url = 'https://www.ele.me/restapi/v1/pois/ww0vu405uyrc'
         axios.get(url, {
           headers: {
             Host: 'h5.ele.me',
@@ -312,6 +312,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           headers: {
             Host: 'h5.ele.me',
             Referer: 'https://h5.ele.me/login/'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      }),
+      //
+      app.get('/api/menuList', (req, res) => {
+        const url = 'https://h5.ele.me/restapi/shopping/v2/menu'
+        axios.get(url, {
+          headers: {
+            Host: 'h5.ele.me',
+            Referer: 'https://h5.ele.me/shop/'
           },
           params: req.query
         }).then((response) => {

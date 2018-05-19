@@ -1,3 +1,6 @@
+const Qs = require('querystring')
+
+export default Qs
 export const imgBaseUrl = 'https://fuss10.elemecdn.com/'
 
 // 传递过来的图片地址需要处理后才能正常使用
@@ -44,3 +47,4 @@ export function base64ToBlob(urlData) {
   return new Blob([u8arr], {type: mime})
 
 }
+

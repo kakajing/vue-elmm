@@ -75,6 +75,24 @@ const mutations = {
     if (info) {
       state.userInfo = JSON.parse(info)
     }
+  },
+  //记录订单页面用户选择的备注, 传递给订单确认页面
+  [types.GET_CONFIRM_REMARK] (state, {remarkText, inputText}) {
+    state.remarkText = remarkText
+    state.inputText = inputText
+  },
+  //是否开发票
+  [types.CONFIRM_INVOICE] (state, invoice) {
+    state.invoice = invoice
+  },
+  //选择搜索的地址
+  [types.CHOOSE_SEARCH_ADDRESS] (state, place) {
+    state.searchAddress = place
+  },
+  //选择的地址
+  [types.CHOOSE_ADDRESS] (state, {address, index}) {
+    state.chooseAddress = address
+    state.addressIndex = index
   }
 }
 

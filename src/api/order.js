@@ -24,7 +24,7 @@ export function checkOut(entities, geohash) {
   })
 
   return axios.post(url, qs.stringify(data), {
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    headers: {'Content-Type': 'multipart/form-data'},
     arrayFormat: 'brackets'
   })
 }

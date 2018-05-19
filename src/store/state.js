@@ -5,7 +5,13 @@ const state = {
   geohash: '',
   cartList: {},    // 加入购物车的商品列表
   shopDetail: null,  //商家详情信息
-  userInfo: null
+  userInfo: null,
+  remarkText: null,
+  inputText: '',
+  invoice: false,
+  searchAddress: null,
+  chooseAddress: null,
+  addressIndex: null
 }
 
 export default state

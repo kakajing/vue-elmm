@@ -27,7 +27,7 @@
 
   export default{
     props: {
-      // 名称
+      // 显示登录注册
       signinUp: {
         type: String,
         default: ''
@@ -46,16 +46,10 @@
         'userInfo'
       ])
     },
-    created () {
-      this.GET_USERINFO()
-    },
     methods: {
       back () {
         this.$router.go(-1)
-      },
-      ...mapMutations([
-        'GET_USERINFO'
-      ])
+      }
     }
   }
 </script>
